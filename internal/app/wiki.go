@@ -20,6 +20,10 @@ var slugAllowed = regexp.MustCompile(`^[a-z0-9_\-]+$`)
 // NormalizeSlug normalizes raw slug input into the canonical database slug.
 func NormalizeSlug(input string) (string, error) {
 	trimmed := strings.TrimSpace(input)
+	if strings.ContainsAny(trimmed, "/\\?&:#'\"") || strings.Contains(trimmed, "..") {
+		return "", errors.New("slug contains invalid path characters")
+	}
+
 	trimmed = strings.ReplaceAll(trimmed, " ", "_")
 	trimmed = strings.ReplaceAll(trimmed, "%20", "_")
 	trimmed = normalizeUnicode(trimmed)

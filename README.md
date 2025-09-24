@@ -14,23 +14,39 @@ Infiniwiki is a tiny Go service that renders AI-generated Wikipedia-style pages 
 - `content` (MEDIUMTEXT) — rendered HTML for the requested slug.
 - `created_at` (TIMESTAMP) — default `CURRENT_TIMESTAMP`.
 
-## Page generation
-- Prompt Groq (initial target: `llama3-70b-8192`) with the slug and minimal context/instructions to emit HTML.
-- Require output to include a `<h1>` with the title and a `<div class="infiniwiki-body">` wrapping the article body.
-- Ask for 3-6 internal wiki links pointing to plausible future slugs (simple `<a href="/wiki/...">` anchors).
-- Enforce deterministic formatting via prompt instructions (no scripts, inline styles only where needed).
+Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 
-## Railway deployment considerations
-- Environment variables provided via Railway: `DATABASE_URL` (MySQL DSN) and `PORT`.
-- Additional secrets: `GROQ_API_KEY`.
-- Service listens on `$PORT` with fallback to `8080` locally.
+## Page generation
+- Prompt Groq (initial target: `llama3-70b-8192`) with the slug and instructions to emit HTML.
+- Output contains a `<h1>` heading and a `<div class="infiniwiki-body">` wrapping the body.
+- Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
+- If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
+
+## Running locally
+```bash
+# set up a MySQL instance and export a DSN the Go driver understands
+export MYSQL_DSN="user:pass@tcp(127.0.0.1:3306)/infiniwiki?parseTime=true"
+export GROQ_API_KEY="sk_your_groq_key"  # optional; stub content without it
+export PORT=8080
+
+# run the server
+GOCACHE=$(pwd)/.gocache go run ./cmd/infiniwiki
+```
+
+Open `http://localhost:8080` and follow internal links to generate pages.
+
+## Railway deployment
+- Railway typically exposes `PORT` automatically.
+- Set `DATABASE_URL` to Railway's MySQL connection string (the loader accepts both driver DSNs and `mysql://` URLs) and store `GROQ_API_KEY` as a secret.
+- Use `go build ./cmd/infiniwiki` for deployment or rely on Railway’s Go buildpack.
+- Make sure migrations run once — e.g. via a Railway job running the SQL in `db/migrations/001_create_pages.sql`.
 
 ## Error handling & observability
-- Serve `404` for invalid slugs, `500` for DB or Groq failures.
-- Log structured JSON lines, capturing request slug, generation latency, and Groq usage.
-- TODO: add metrics endpoint or integrate with Railway logging in future iteration.
+- `404` for invalid slugs, `500` for DB/Groq failures.
+- JSON logging can be layered in later; currently plain-text logs capture key errors.
+- TODO: metrics endpoint or structured logging for production visibility.
 
 ## Future work
-- Add auth rate limits to avoid abuse.
-- Cache Groq responses or deduplicate concurrent generations across instances.
-- Explore static asset hosting for shared CSS mimicking Wikipedia.
+- Rate limiting per IP to prevent abuse.
+- Cache Groq responses across instances (e.g. Redis-backed singleflight) and track generation latency metrics.
+- Serve shared CSS and assets via static file handler.

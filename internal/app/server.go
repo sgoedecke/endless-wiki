@@ -10,6 +10,9 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	mysql "github.com/go-sql-driver/mysql"
+	"golang.org/x/sync/singleflight"
 )
 
 // Server wires handlers, templates, and external dependencies together.
@@ -19,7 +22,11 @@ type Server struct {
 	templates  *template.Template
 	httpClient *http.Client
 	mux        *http.ServeMux
+	genGroup   singleflight.Group
 }
+
+// ErrDuplicatePage signals that a slug already exists in the database.
+var ErrDuplicatePage = errors.New("duplicate page")
 
 // NewServer constructs an HTTP handler ready to serve wiki requests.
 func NewServer(db *sql.DB, cfg Config) (*Server, error) {
@@ -95,17 +102,20 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if page == nil {
-		content, err := GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
-		if err != nil {
-			log.Printf("generate page %s: %v", slug, err)
+		result, genErr, _ := s.genGroup.Do(slug, func() (interface{}, error) {
+			return s.generateAndStore(ctx, slug)
+		})
+		if genErr != nil {
+			log.Printf("generate page %s: %v", slug, genErr)
 			http.Error(w, "failed to generate page", http.StatusInternalServerError)
 			return
 		}
 
-		page = &Page{Slug: slug, Content: content}
-		if err := s.insertPage(ctx, page); err != nil {
-			log.Printf("insert page %s: %v", slug, err)
-			http.Error(w, "failed to persist page", http.StatusInternalServerError)
+		var ok bool
+		page, ok = result.(*Page)
+		if !ok {
+			log.Printf("generation result type mismatch for %s", slug)
+			http.Error(w, "failed to generate page", http.StatusInternalServerError)
 			return
 		}
 	}
@@ -141,6 +151,37 @@ func (s *Server) lookupPage(ctx context.Context, slug string) (*Page, error) {
 
 func (s *Server) insertPage(ctx context.Context, page *Page) error {
 	const insert = `INSERT INTO pages (slug, content) VALUES (?, ?)`
-	_, err := s.db.ExecContext(ctx, insert, page.Slug, page.Content)
-	return err
+	if _, err := s.db.ExecContext(ctx, insert, page.Slug, page.Content); err != nil {
+		var mysqlErr *mysql.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+			return ErrDuplicatePage
+		}
+		return err
+	}
+	return nil
+}
+
+func (s *Server) generateAndStore(ctx context.Context, slug string) (*Page, error) {
+	content, err := GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
+	if err != nil {
+		return nil, err
+	}
+
+	page := &Page{Slug: slug, Content: content}
+	err = s.insertPage(ctx, page)
+	if err == nil {
+		return page, nil
+	}
+	if errors.Is(err, ErrDuplicatePage) {
+		// Another request persisted the page before us; fetch the stored version.
+		stored, lookupErr := s.lookupPage(ctx, slug)
+		if lookupErr != nil {
+			return nil, lookupErr
+		}
+		if stored != nil {
+			return stored, nil
+		}
+		return nil, err
+	}
+	return nil, err
 }
