@@ -1,0 +1,36 @@
+{{define "wiki.gohtml"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{.Title}} - Infiniwiki</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f6f6f6; color: #202122; margin: 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        header { background: #fff; border-bottom: 1px solid #a7d7f9; padding: 16px 24px; }
+        header h1 { margin: 0; font-size: 20px; }
+        .content { display: flex; justify-content: center; padding: 24px; }
+        .article { max-width: 960px; width: 100%; background: #fff; border: 1px solid #c8ccd1; padding: 32px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .article h1 { border-bottom: 1px solid #a2a9b1; padding-bottom: 8px; margin-top: 0; }
+        footer { text-align: center; color: #54595d; font-size: 12px; padding: 16px 0 32px; }
+        .toolbar { font-size: 12px; color: #54595d; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1><a href="/">Infiniwiki</a></h1>
+    <div class="toolbar">AI-generated encyclopedia inspired by Wikipedia.</div>
+</header>
+<div class="content">
+    <article class="article">
+        {{.Content}}
+    </article>
+</div>
+<footer>
+    Content generated on demand. Links lead to newly synthesised pages.
+</footer>
+</body>
+</html>
+{{end}}

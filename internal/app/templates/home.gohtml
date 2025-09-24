@@ -1,0 +1,32 @@
+{{define "home.gohtml"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Infiniwiki</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f6f6f6; color: #202122; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background: #fff; border: 1px solid #c8ccd1; padding: 32px; max-width: 560px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        h1 { margin-top: 0; }
+        a { color: #0645ad; }
+        form { margin-top: 16px; display: flex; }
+        input[type="text"] { flex: 1; padding: 8px; border: 1px solid #a2a9b1; border-radius: 2px 0 0 2px; font-size: 16px; }
+        button { padding: 8px 16px; border: none; background: #3366cc; color: #fff; font-size: 16px; border-radius: 0 2px 2px 0; cursor: pointer; }
+        button:hover { background: #254a9d; }
+        .hint { font-size: 14px; color: #54595d; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Infiniwiki</h1>
+    <p>Type any topic to generate an AI-written article. Following links in articles will forge new pages automatically.</p>
+    <form action="/wiki/" method="get" onsubmit="if(this.elements['topic'].value){this.action='/wiki/'+encodeURIComponent(this.elements['topic'].value);return true;} return false;">
+        <input type="text" name="topic" placeholder="e.g. Orbital Gardening" autofocus>
+        <button type="submit">Explore</button>
+    </form>
+    <p class="hint">Try the <a href="/wiki/main_page">main page</a> to begin.</p>
+</div>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,6 @@
+./config.go
+./database.go
+./generate.go
+./server.go
+./templates.go
+./wiki.go
