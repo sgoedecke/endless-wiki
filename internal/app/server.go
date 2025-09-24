@@ -32,7 +32,7 @@ var ErrDuplicatePage = errors.New("duplicate page")
 func NewServer(db *sql.DB, cfg Config) (*Server, error) {
 	tmpl, err := template.New("base").Funcs(template.FuncMap{
 		"slugTitle": SlugTitle,
-	}).ParseFS(templateFS, "templates/wiki.gohtml", "templates/home.gohtml", "templates/search.gohtml")
+	}).ParseFS(templateFS, "templates/wiki.gohtml", "templates/search.gohtml")
 	if err != nil {
 		return nil, err
 	}
@@ -67,23 +67,7 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count, err := s.pageCount(r.Context())
-	if err != nil {
-		log.Printf("count pages: %v", err)
-		count = 0
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	data := struct {
-		PageCount   int
-		SearchQuery string
-	}{
-		PageCount:   count,
-		SearchQuery: "",
-	}
-	if err := s.templates.ExecuteTemplate(w, "home.gohtml", data); err != nil {
-		log.Printf("render home: %v", err)
-	}
+	http.Redirect(w, r, "/wiki/main_page", http.StatusFound)
 }
 
 func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +94,14 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	originSlug := ""
+	if origin := r.URL.Query().Get("origin"); origin != "" {
+		normalizedOrigin, normErr := NormalizeSlug(origin)
+		if normErr == nil {
+			originSlug = normalizedOrigin
+		}
+	}
+
 	ctx := r.Context()
 	page, err := s.lookupPage(ctx, slug)
 	if err != nil {
@@ -119,6 +111,27 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if page == nil {
+		if slug != "main_page" {
+			if originSlug == "" {
+				http.Error(w, "new pages must be reached via existing links", http.StatusForbidden)
+				return
+			}
+			originPage, lookupErr := s.lookupPage(ctx, originSlug)
+			if lookupErr != nil {
+				log.Printf("lookup origin %s: %v", originSlug, lookupErr)
+				http.Error(w, "origin lookup failed", http.StatusInternalServerError)
+				return
+			}
+			if originPage == nil {
+				http.Error(w, "origin page missing", http.StatusForbidden)
+				return
+			}
+			if !hasLinkTo(originPage.Content, slug) {
+				http.Error(w, "origin page does not link here", http.StatusForbidden)
+				return
+			}
+		}
+
 		result, genErr, _ := s.genGroup.Do(slug, func() (interface{}, error) {
 			return s.generateAndStore(ctx, slug)
 		})
@@ -144,6 +157,8 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	decorated := decorateInternalLinks(page.Content, page.Slug)
+
 	data := struct {
 		Title       string
 		Slug        string
@@ -153,7 +168,7 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 	}{
 		Title:       SlugTitle(page.Slug),
 		Slug:        page.Slug,
-		Content:     template.HTML(page.Content),
+		Content:     template.HTML(decorated),
 		PageCount:   count,
 		SearchQuery: "",
 	}
@@ -265,20 +280,20 @@ func (s *Server) insertPage(ctx context.Context, page *Page) error {
 }
 
 func (s *Server) generateAndStore(ctx context.Context, slug string) (*Page, error) {
-    var content string
-    var err error
+	var content string
+	var err error
 
-    if slug == "main_page" {
-        content = mainPageHTML()
-    } else {
-        content, err = GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
-        if err != nil {
-            return nil, err
-        }
-    }
+	if slug == "main_page" {
+		content = mainPageHTML()
+	} else {
+		content, err = GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
+		if err != nil {
+			return nil, err
+		}
+	}
 
-    page := &Page{Slug: slug, Content: content}
-    err = s.insertPage(ctx, page)
+	page := &Page{Slug: slug, Content: content}
+	err = s.insertPage(ctx, page)
 	if err == nil {
 		return page, nil
 	}

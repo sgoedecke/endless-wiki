@@ -17,7 +17,7 @@ EndlessWiki is a tiny Go service that renders AI-generated Wikipedia-style pages
 Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 
 ## Page generation
-- Prompt Groq (initial target: `moonshotai/kimi-k2-instruct-0905`) with the slug and instructions to emit HTML. The special `main_page` slug renders a handcrafted EndlessWiki overview instead of calling the model.
+- Prompt Groq (initial target: `moonshotai/kimi-k2-instruct-0905`) with the slug and instructions to emit HTML. The special `main_page` slug renders a handcrafted EndlessWiki overview instead of calling the model. New slugs are only minted when navigated from an existing page that explicitly links to them.
 - Output contains a `<h1>` heading and a `<div class="endlesswiki-body">` wrapping the body.
 - Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
 - If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
@@ -34,7 +34,7 @@ export PORT=8080
 GOCACHE=$(pwd)/.gocache go run ./cmd/endlesswiki
 ```
 
-Open `http://localhost:8080` and follow internal links to generate pages. The landing page offers quick links to a random article (`/random`), the most recently generated entry (`/recent`), and a search bar for querying stored pages.
+Open `http://localhost:8080/wiki/main_page` (or hit `/`, which redirects there) and follow internal links to generate pages. The chrome exposes search, random (`/random`), and most-recent (`/recent`) entry points across the site.
 
 ## Railway deployment
 - Railway typically exposes `PORT` automatically.
