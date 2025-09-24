@@ -1,9 +1,9 @@
-{{define "wiki.gohtml"}}
+{{define "search.gohtml"}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{{.Title}} - EndlessWiki</title>
+    <title>Search results for {{.Query}} - EndlessWiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%2064%2064%22%3E%3Ctext%20y=%2250%25%22%20x=%2250%25%22%20text-anchor=%22middle%22%20dominant-baseline=%22central%22%20font-size=%2248%22%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
     <style>
@@ -19,22 +19,11 @@
         #mw-head input[type="text"] { flex: 1; padding: 6px 8px; border: 1px solid #a2a9b1; border-radius: 2px; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
         #mw-head button { padding: 6px 12px; border: 1px solid #2a4b8d; background: #3366cc; color: #fff; font-size: 14px; border-radius: 2px; cursor: pointer; }
         #mw-head button:hover { background: #254a9d; }
-        #globalWrapper { display: flex; max-width: 1080px; margin: 0 auto; padding: 16px 20px; box-sizing: border-box; }
-        #mw-panel { width: 200px; padding-right: 20px; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
-        #mw-panel h2 { font-size: 14px; font-weight: 700; margin: 14px 0 6px; color: #44505a; }
-        #mw-panel ul { list-style: none; padding: 0 0 0 6px; margin: 0; font-size: 14px; line-height: 1.6; }
-        #mw-panel li { margin: 6px 0; }
-        #content { flex: 1; margin-left: 16px; }
-        #bodyContent { padding: 0 0 32px 0; }
-        #bodyContent h1 { font-size: 28px; font-weight: 400; border-bottom: 1px solid #a2a9b1; padding-bottom: 6px; margin-top: 0; font-family: "Linux Libertine","Georgia","Times New Roman",serif; }
-        #bodyContent p { line-height: 1.6; }
-        #bodyContent ul { padding-left: 32px; }
-        footer { text-align: center; color: #54595d; font-size: 12px; padding: 24px 0 32px; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
-        @media (max-width: 960px) {
-            #globalWrapper { flex-direction: column; padding: 8px; }
-            #mw-panel { width: auto; border-right: none; border-bottom: 1px solid #c8ccd1; padding-bottom: 12px; margin-bottom: 12px; }
-            #content { margin-left: 0; }
-        }
+        #globalWrapper { max-width: 1080px; margin: 0 auto; padding: 16px 20px 40px; box-sizing: border-box; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
+        h2 { font-family: "Linux Libertine","Georgia","Times New Roman",serif; font-size: 24px; font-weight: 400; margin: 0 0 12px; }
+        .results { list-style: none; padding: 0; margin: 0; }
+        .results li { margin-bottom: 10px; }
+        .empty { font-size: 16px; color: #54595d; }
     </style>
 </head>
 <body>
@@ -49,30 +38,17 @@
     </div>
 </div>
 <div id="globalWrapper">
-    <aside id="mw-panel">
-        <h2>Navigation</h2>
-        <ul>
-            <li><a href="/wiki/main_page">Main page</a></li>
-            <li><a href="/random">Random page</a></li>
-            <li><a href="/recent">Most recent</a></li>
-            <li><a href="/wiki/help">Help</a></li>
-        </ul>
-        <h2>Tools</h2>
-        <ul>
-            <li><a href="/wiki/{{.Slug}}">View</a></li>
-            <li><a href="/">Talk</a></li>
-            <li><a href="/">History</a></li>
-        </ul>
-    </aside>
-    <main id="content">
-        <div id="bodyContent">
-            {{.Content}}
-        </div>
-    </main>
+    <h2>Search results for "{{.Query}}"</h2>
+    {{if .Results}}
+    <ul class="results">
+        {{range .Results}}
+            <li><a href="/wiki/{{.}}">{{slugTitle .}}</a></li>
+        {{end}}
+    </ul>
+    {{else}}
+    <p class="empty">No results found. You'll have to discover this content via links.</p>
+    {{end}}
 </div>
-<footer>
-    EndlessWiki pages are generated on demand. Internal links will create new articles when visited.
-</footer>
 </body>
 </html>
 {{end}}

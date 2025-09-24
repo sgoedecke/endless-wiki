@@ -21,6 +21,7 @@ Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 - Output contains a `<h1>` heading and a `<div class="endlesswiki-body">` wrapping the body.
 - Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
 - If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
+- A lightweight search endpoint (`/search?q=`) surfaces previously generated pages via a simple MySQL `LIKE` query.
 
 ## Running locally
 ```bash
@@ -33,7 +34,7 @@ export PORT=8080
 GOCACHE=$(pwd)/.gocache go run ./cmd/endlesswiki
 ```
 
-Open `http://localhost:8080` and follow internal links to generate pages. The landing page offers quick links to a random article (`/random`) and the most recently generated entry (`/recent`).
+Open `http://localhost:8080` and follow internal links to generate pages. The landing page offers quick links to a random article (`/random`), the most recently generated entry (`/recent`), and a search bar for querying stored pages.
 
 ## Railway deployment
 - Railway typically exposes `PORT` automatically.
