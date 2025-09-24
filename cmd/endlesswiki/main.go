@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"infiniwiki/internal/app"
+	"endlesswiki/internal/app"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 	defer stop()
 
 	go func() {
-		log.Printf("infiniwiki listening on %s", srv.Addr)
+		log.Printf("endlesswiki listening on %s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %v", err)
 		}

@@ -1,4 +1,4 @@
-module infiniwiki
+module endlesswiki
 
 go 1.25.0
 

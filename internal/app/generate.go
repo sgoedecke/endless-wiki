@@ -25,7 +25,7 @@ func GeneratePageHTML(ctx context.Context, client *http.Client, cfg Config, slug
 		Messages: []groqMessage{
 			{
 				Role:    "system",
-				Content: "You are composing clean HTML for a fictional encyclopedia. Output only valid HTML with a single <h1> title and a <div class=\"infiniwiki-body\"> wrapping the body. Include 3-6 internal links in the body pointing to related topics using <a href=\"/wiki/...\"> text.",
+				Content: "You are composing clean HTML for a fictional encyclopedia. Output only valid HTML with a single <h1> title and a <div class=\"endlesswiki-body\"> wrapping the body. Include 3-6 internal links in the body pointing to related topics using <a href=\"/wiki/...\"> text.",
 			},
 			{
 				Role:    "user",
@@ -93,12 +93,12 @@ func stubPage(slug string) string {
 	var b strings.Builder
 	b.WriteString("<h1>")
 	b.WriteString(templateEscape(title))
-	b.WriteString("</h1>\n<div class=\"infiniwiki-body\">\n")
-	b.WriteString("<p>This Infiniwiki entry for ")
+	b.WriteString("</h1>\n<div class=\"endlesswiki-body\">\n")
+	b.WriteString("<p>This EndlessWiki entry for ")
 	b.WriteString(templateEscape(title))
 	b.WriteString(" is a placeholder generated without Groq access. It outlines the topic and suggests related articles.</p>\n")
 	b.WriteString("<p>Future iterations will fetch richer AI generated prose from Groq's models.</p>\n")
-	b.WriteString("<ul class=\"infiniwiki-summary\">\n")
+	b.WriteString("<ul class=\"endlesswiki-summary\">\n")
 	for _, link := range links {
 		b.WriteString("  <li><a href=\"/wiki/")
 		b.WriteString(link)

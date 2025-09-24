@@ -3,30 +3,71 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Infiniwiki</title>
+    <title>EndlessWiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f6f6f6; color: #202122; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .card { background: #fff; border: 1px solid #c8ccd1; padding: 32px; max-width: 560px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
-        h1 { margin-top: 0; }
-        a { color: #0645ad; }
-        form { margin-top: 16px; display: flex; }
+        body { margin: 0; padding: 0; background: #f6f6f6; color: #202122; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
+        #mw-head { background: #fff; border-bottom: 1px solid #a7d7f9; padding: 12px 24px; }
+        #mw-head h1 { margin: 0; font-size: 22px; }
+        #mw-head p { margin: 4px 0 0; font-size: 13px; color: #54595d; }
+        #landing { max-width: 960px; margin: 32px auto; background: #fff; border: 1px solid #c8ccd1; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; }
+        #landing aside { width: 220px; border-right: 1px solid #c8ccd1; padding: 24px; }
+        #landing main { flex: 1; padding: 32px; }
+        h2 { font-size: 20px; margin-top: 0; }
+        form { margin-top: 16px; display: flex; max-width: 420px; }
         input[type="text"] { flex: 1; padding: 8px; border: 1px solid #a2a9b1; border-radius: 2px 0 0 2px; font-size: 16px; }
         button { padding: 8px 16px; border: none; background: #3366cc; color: #fff; font-size: 16px; border-radius: 0 2px 2px 0; cursor: pointer; }
         button:hover { background: #254a9d; }
-        .hint { font-size: 14px; color: #54595d; margin-top: 12px; }
+        .quick-links { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .quick-links a { font-size: 14px; background: #f8f9fa; border: 1px solid #a2a9b1; border-radius: 2px; padding: 6px 12px; color: #0645ad; text-decoration: none; }
+        .quick-links a:hover { background: #eef2f5; }
+        ul { list-style: none; padding: 0; margin: 0; font-size: 14px; }
+        ul li { margin: 6px 0; }
+        a { color: #0645ad; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        footer { text-align: center; color: #54595d; font-size: 12px; margin: 24px 0 32px; }
+        @media (max-width: 820px) {
+            #landing { flex-direction: column; }
+            #landing aside { width: auto; border-right: none; border-bottom: 1px solid #c8ccd1; }
+        }
     </style>
 </head>
 <body>
-<div class="card">
-    <h1>Infiniwiki</h1>
-    <p>Type any topic to generate an AI-written article. Following links in articles will forge new pages automatically.</p>
-    <form action="/wiki/" method="get" onsubmit="if(this.elements['topic'].value){this.action='/wiki/'+encodeURIComponent(this.elements['topic'].value);return true;} return false;">
-        <input type="text" name="topic" placeholder="e.g. Orbital Gardening" autofocus>
-        <button type="submit">Explore</button>
-    </form>
-    <p class="hint">Try the <a href="/wiki/main_page">main page</a> to begin.</p>
+<div id="mw-head">
+    <h1>EndlessWiki</h1>
+    <p>Welcome to the infinite encyclopedia.</p>
 </div>
+<div id="landing">
+    <aside>
+        <h3>Navigation</h3>
+        <ul>
+            <li><a href="/wiki/main_page">Main page</a></li>
+            <li><a href="/wiki/help">Help</a></li>
+            <li><a href="/wiki/featured_article">Featured content</a></li>
+        </ul>
+        <h3>Explore</h3>
+        <ul>
+            <li><a href="/wiki/orbital_gardening">Random idea</a></li>
+            <li><a href="/wiki/cloud_atlases">Another article</a></li>
+        </ul>
+    </aside>
+    <main>
+        <h2>Begin your journey</h2>
+        <p>Type any topic to conjure an AI-written article. Every link inside an article forges a brand new page on demand, saved to the EndlessWiki archive.</p>
+        <form action="/wiki/" method="get" onsubmit="if(this.elements['topic'].value){this.action='/wiki/'+encodeURIComponent(this.elements['topic'].value);return true;} return false;">
+            <input type="text" name="topic" placeholder="e.g. Clockwork Oceanography" autofocus>
+            <button type="submit">Read</button>
+        </form>
+        <div class="quick-links">
+            <a href="/random">Random page</a>
+            <a href="/recent">Most recent page</a>
+        </div>
+        <p style="font-size:14px; color:#54595d; margin-top:16px;">Or jump straight to the <a href="/wiki/main_page">main page</a> to see what's new.</p>
+    </main>
+</div>
+<footer>
+    EndlessWiki is unofficial and AI-generated. Design inspired by Wikipedia.
+</footer>
 </body>
 </html>
 {{end}}

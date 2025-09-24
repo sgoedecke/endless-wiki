@@ -47,6 +47,8 @@ func NewServer(db *sql.DB, cfg Config) (*Server, error) {
 
 	srv.mux.HandleFunc("/", srv.handleIndex)
 	srv.mux.HandleFunc("/wiki/", srv.handleWiki)
+	srv.mux.HandleFunc("/random", srv.handleRandomPage)
+	srv.mux.HandleFunc("/recent", srv.handleRecentPage)
 
 	return srv, nil
 }
@@ -136,6 +138,34 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) handleRandomPage(w http.ResponseWriter, r *http.Request) {
+	slug, err := s.randomSlug(r.Context())
+	if err != nil {
+		log.Printf("random slug: %v", err)
+		http.Error(w, "failed to load random page", http.StatusInternalServerError)
+		return
+	}
+	if slug == "" {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	http.Redirect(w, r, "/wiki/"+url.PathEscape(slug), http.StatusFound)
+}
+
+func (s *Server) handleRecentPage(w http.ResponseWriter, r *http.Request) {
+	slug, err := s.recentSlug(r.Context())
+	if err != nil {
+		log.Printf("recent slug: %v", err)
+		http.Error(w, "failed to load recent page", http.StatusInternalServerError)
+		return
+	}
+	if slug == "" {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	http.Redirect(w, r, "/wiki/"+url.PathEscape(slug), http.StatusFound)
+}
+
 func (s *Server) lookupPage(ctx context.Context, slug string) (*Page, error) {
 	const query = `SELECT slug, content, created_at FROM pages WHERE slug = ?`
 	row := s.db.QueryRowContext(ctx, query, slug)
@@ -184,4 +214,30 @@ func (s *Server) generateAndStore(ctx context.Context, slug string) (*Page, erro
 		return nil, err
 	}
 	return nil, err
+}
+
+func (s *Server) randomSlug(ctx context.Context) (string, error) {
+	const query = `SELECT slug FROM pages ORDER BY RAND() LIMIT 1`
+	row := s.db.QueryRowContext(ctx, query)
+	var slug string
+	if err := row.Scan(&slug); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil
+		}
+		return "", err
+	}
+	return slug, nil
+}
+
+func (s *Server) recentSlug(ctx context.Context) (string, error) {
+	const query = `SELECT slug FROM pages ORDER BY created_at DESC LIMIT 1`
+	row := s.db.QueryRowContext(ctx, query)
+	var slug string
+	if err := row.Scan(&slug); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil
+		}
+		return "", err
+	}
+	return slug, nil
 }

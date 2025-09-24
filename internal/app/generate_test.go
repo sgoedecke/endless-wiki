@@ -12,7 +12,7 @@ func TestGeneratePageHTMLWithoutGroqKeyUsesStub(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GeneratePageHTML returned error: %v", err)
 	}
-	if !containsAll(html, []string{"<div class=\"infiniwiki-body\">", "/wiki/test_topic_history"}) {
+	if !containsAll(html, []string{"<div class=\"endlesswiki-body\">", "/wiki/test_topic_history"}) {
 		t.Fatalf("stub html missing expected structure: %s", html)
 	}
 }

@@ -1,6 +1,6 @@
-# Infiniwiki
+# EndlessWiki
 
-Infiniwiki is a tiny Go service that renders AI-generated Wikipedia-style pages on demand. Pages are persisted in MySQL, and every internal link triggers generation of a new page the first time it is visited.
+EndlessWiki is a tiny Go service that renders AI-generated Wikipedia-style pages on demand. Pages are persisted in MySQL, and every internal link triggers generation of a new page the first time it is visited.
 
 ## High-level flow
 1. Normalize the requested slug (case fold, replace spaces with underscores, strip unsafe characters).
@@ -18,27 +18,27 @@ Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 
 ## Page generation
 - Prompt Groq (initial target: `moonshotai/kimi-k2-instruct-0905`) with the slug and instructions to emit HTML.
-- Output contains a `<h1>` heading and a `<div class="infiniwiki-body">` wrapping the body.
+- Output contains a `<h1>` heading and a `<div class="endlesswiki-body">` wrapping the body.
 - Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
 - If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
 
 ## Running locally
 ```bash
 # set up a MySQL instance and export a DSN the Go driver understands
-export MYSQL_DSN="user:pass@tcp(127.0.0.1:3306)/infiniwiki?parseTime=true"
+export MYSQL_DSN="user:pass@tcp(127.0.0.1:3306)/endlesswiki?parseTime=true"
 export GROQ_API_KEY="sk_your_groq_key"  # optional; stub content without it
 export PORT=8080
 
 # run the server
-GOCACHE=$(pwd)/.gocache go run ./cmd/infiniwiki
+GOCACHE=$(pwd)/.gocache go run ./cmd/endlesswiki
 ```
 
-Open `http://localhost:8080` and follow internal links to generate pages.
+Open `http://localhost:8080` and follow internal links to generate pages. The landing page offers quick links to a random article (`/random`) and the most recently generated entry (`/recent`).
 
 ## Railway deployment
 - Railway typically exposes `PORT` automatically.
 - Set `DATABASE_URL` to Railway's MySQL connection string (the loader accepts both driver DSNs and `mysql://` URLs) and store `GROQ_API_KEY` as a secret.
-- Use `go build ./cmd/infiniwiki` for deployment or rely on Railway’s Go buildpack.
+- Use `go build ./cmd/endlesswiki` for deployment or rely on Railway’s Go buildpack.
 - Make sure migrations run once — e.g. via a Railway job running the SQL in `db/migrations/001_create_pages.sql`.
 
 ## Error handling & observability
