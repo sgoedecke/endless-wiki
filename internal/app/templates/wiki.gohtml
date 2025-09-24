@@ -29,6 +29,11 @@
         #bodyContent h1 { font-size: 28px; font-weight: 400; border-bottom: 1px solid #a2a9b1; padding-bottom: 6px; margin-top: 0; font-family: "Linux Libertine","Georgia","Times New Roman",serif; }
         #bodyContent p { line-height: 1.6; }
         #bodyContent ul { padding-left: 32px; }
+        .mainpage-columns { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 12px; }
+        .mainpage-columns section { flex: 1 1 200px; background: #f8f9fa; border: 1px solid #c8ccd1; padding: 12px 16px; border-radius: 4px; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
+        .mainpage-columns h3 { margin-top: 0; font-size: 16px; color: #202122; }
+        .mainpage-columns ul { padding-left: 18px; margin: 8px 0 0; }
+        .mainpage-columns li { margin-bottom: 6px; }
         footer { text-align: center; color: #54595d; font-size: 12px; padding: 24px 0 32px; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; }
         @media (max-width: 960px) {
             #globalWrapper { flex-direction: column; padding: 8px; }
@@ -55,13 +60,6 @@
             <li><a href="/wiki/main_page">Main page</a></li>
             <li><a href="/random">Random page</a></li>
             <li><a href="/recent">Most recent</a></li>
-            <li><a href="/wiki/help">Help</a></li>
-        </ul>
-        <h2>Tools</h2>
-        <ul>
-            <li><a href="/wiki/{{.Slug}}">View</a></li>
-            <li><a href="/">Talk</a></li>
-            <li><a href="/">History</a></li>
         </ul>
     </aside>
     <main id="content">

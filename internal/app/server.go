@@ -265,13 +265,20 @@ func (s *Server) insertPage(ctx context.Context, page *Page) error {
 }
 
 func (s *Server) generateAndStore(ctx context.Context, slug string) (*Page, error) {
-	content, err := GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
-	if err != nil {
-		return nil, err
-	}
+    var content string
+    var err error
 
-	page := &Page{Slug: slug, Content: content}
-	err = s.insertPage(ctx, page)
+    if slug == "main_page" {
+        content = mainPageHTML()
+    } else {
+        content, err = GeneratePageHTML(ctx, s.httpClient, s.cfg, slug)
+        if err != nil {
+            return nil, err
+        }
+    }
+
+    page := &Page{Slug: slug, Content: content}
+    err = s.insertPage(ctx, page)
 	if err == nil {
 		return page, nil
 	}
