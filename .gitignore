@@ -1,0 +1,20 @@
+# Go build artifacts
+bin/
+*.exe
+*.test
+*.out
+
+dist/
+
+# Module caches
+.gocache/
+
+# IDE/editor junk
+*.swp
+*.swo
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
