@@ -17,7 +17,7 @@ Infiniwiki is a tiny Go service that renders AI-generated Wikipedia-style pages 
 Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 
 ## Page generation
-- Prompt Groq (initial target: `llama3-70b-8192`) with the slug and instructions to emit HTML.
+- Prompt Groq (initial target: `moonshotai/kimi-k2-instruct-0905`) with the slug and instructions to emit HTML.
 - Output contains a `<h1>` heading and a `<div class="infiniwiki-body">` wrapping the body.
 - Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
 - If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
