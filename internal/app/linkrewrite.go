@@ -2,12 +2,14 @@ package app
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 )
 
 var doubleQuoteHref = regexp.MustCompile(`href="(/wiki/[^"]+)"`)
 var singleQuoteHref = regexp.MustCompile(`href='(/wiki/[^']+)'`)
+var wikiHref = regexp.MustCompile(`href=['"](/wiki/[^'"#?]+(?:[^'" ]*)?)['"]`)
 
 func decorateInternalLinks(content, origin string) string {
 	if origin == "" {
@@ -59,6 +61,63 @@ func injectOrigin(href, origin string) string {
 }
 
 func hasLinkTo(content, target string) bool {
-	needle := "/wiki/" + target
-	return strings.Contains(content, "href=\""+needle) || strings.Contains(content, "href='"+needle)
+	target = strings.ToLower(target)
+	for _, slug := range linkedSlugs(content) {
+		if slug == target {
+			return true
+		}
+	}
+	return false
+}
+
+func linkedSlugs(content string) []string {
+	matches := wikiHref.FindAllStringSubmatch(content, -1)
+	if len(matches) == 0 {
+		return nil
+	}
+
+	seen := make(map[string]struct{})
+	for _, match := range matches {
+		if len(match) < 2 {
+			continue
+		}
+		href := match[1]
+		slug := slugFromHref(href)
+		if slug == "" {
+			continue
+		}
+		if _, ok := seen[slug]; !ok {
+			seen[slug] = struct{}{}
+		}
+	}
+
+	result := make([]string, 0, len(seen))
+	for slug := range seen {
+		result = append(result, slug)
+	}
+	return result
+}
+
+func slugFromHref(href string) string {
+	withoutFragment := href
+	if idx := strings.IndexAny(withoutFragment, "?#"); idx >= 0 {
+		withoutFragment = withoutFragment[:idx]
+	}
+
+	trimmed := strings.TrimPrefix(withoutFragment, "/wiki/")
+	if trimmed == "" {
+		return ""
+	}
+
+	decoded, err := url.PathUnescape(trimmed)
+	if err != nil {
+		return ""
+	}
+
+	slug, err := NormalizeSlug(decoded)
+	if err != nil {
+		return ""
+	}
+
+	return slug
 }
