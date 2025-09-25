@@ -6,6 +6,10 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 // Page represents a persisted wiki article.
@@ -24,6 +28,7 @@ func NormalizeSlug(input string) (string, error) {
 		return "", errors.New("slug contains invalid path characters")
 	}
 
+	trimmed = stripDiacritics(trimmed)
 	trimmed = strings.ReplaceAll(trimmed, " ", "_")
 	trimmed = strings.ReplaceAll(trimmed, "%20", "_")
 	trimmed = normalizeUnicode(trimmed)
@@ -70,4 +75,14 @@ func SlugTitle(slug string) string {
 		parts[i] = strings.ToUpper(part[:1]) + part[1:]
 	}
 	return strings.Join(parts, " ")
+}
+
+var diacriticStripper = transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+
+func stripDiacritics(s string) string {
+	stripped, _, err := transform.String(diacriticStripper, s)
+	if err != nil {
+		return s
+	}
+	return stripped
 }
