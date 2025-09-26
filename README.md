@@ -41,10 +41,10 @@ Open `http://localhost:8080/wiki/main_page` (or hit `/`, which redirects there) 
 
 ```bash
 # produce static/constellation.json
-GOCACHE=$(pwd)/.gocache go run ./cmd/constellation
+scripts/constellation.sh
 
 # optional: choose a different destination
-GOCACHE=$(pwd)/.gocache go run ./cmd/constellation -out /tmp/constellation.json
+scripts/constellation.sh -out /tmp/constellation.json
 ```
 
 Run the exporter before building/deploying to refresh `static/constellation.json`. The `/constellation` page serves `static/constellation.html`, which visualises the generated snapshot directly in the browser.
