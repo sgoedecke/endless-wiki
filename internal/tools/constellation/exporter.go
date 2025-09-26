@@ -14,6 +14,7 @@ type Node struct {
 	Slug      string    `json:"slug"`
 	CreatedAt time.Time `json:"created_at"`
 	Outbound  int       `json:"outbound"`
+	Cluster   int       `json:"cluster"`
 }
 
 type Edge struct {
@@ -84,6 +85,17 @@ func Export(db *sql.DB, outPath string) (Graph, error) {
 			CreatedAt: p.created,
 			Outbound:  outbound,
 		})
+	}
+
+	slugs := make([]string, len(nodes))
+	for i, node := range nodes {
+		slugs[i] = node.Slug
+	}
+
+	clusters := computeLouvainClusters(slugs, edges)
+	for i, node := range nodes {
+		node.Cluster = clusters[node.Slug]
+		nodes[i] = node
 	}
 
 	g := Graph{
