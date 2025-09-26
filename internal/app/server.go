@@ -47,10 +47,12 @@ func NewServer(db *sql.DB, cfg Config) (*Server, error) {
 		mux: http.NewServeMux(),
 	}
 
-	srv.mux.HandleFunc("/", srv.handleIndex)
-	srv.mux.HandleFunc("/wiki/", srv.handleWiki)
-	srv.mux.HandleFunc("/random", srv.handleRandomPage)
-	srv.mux.HandleFunc("/recent", srv.handleRecentPage)
+    srv.mux.HandleFunc("/", srv.handleIndex)
+    srv.mux.HandleFunc("/wiki/", srv.handleWiki)
+    srv.mux.HandleFunc("/random", srv.handleRandomPage)
+    srv.mux.HandleFunc("/recent", srv.handleRecentPage)
+    srv.mux.HandleFunc("/constellation", srv.handleConstellation)
+    srv.mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	srv.mux.HandleFunc("/search", srv.handleSearch)
 
 	return srv, nil
@@ -62,12 +64,21 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
+    if r.URL.Path != "/" {
+        http.NotFound(w, r)
+        return
+    }
 
-	http.Redirect(w, r, "/wiki/main_page", http.StatusFound)
+    http.Redirect(w, r, "/wiki/main_page", http.StatusFound)
+}
+
+func (s *Server) handleConstellation(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        w.WriteHeader(http.StatusMethodNotAllowed)
+        return
+    }
+
+    http.ServeFile(w, r, "static/constellation.html")
 }
 
 func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>EndlessWiki Constellation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; background: #0b1026; color: #f8f8ff; }
+    header { padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; font-size: 20px; }
+    header a { color: #89c2ff; text-decoration: none; }
+    #meta { font-size: 13px; color: rgba(255,255,255,0.7); }
+    #canvas { display: block; width: 100vw; height: calc(100vh - 72px); }
+    #tooltip { position: fixed; pointer-events: none; background: rgba(11,16,38,0.9); color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(255,255,255,0.2); display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>EndlessWiki Constellation</h1>
+      <div id="meta">Loading constellation…</div>
+    </div>
+    <a href="/wiki/main_page">Back to EndlessWiki</a>
+  </header>
+  <canvas id="canvas"></canvas>
+  <div id="tooltip"></div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const tooltip = document.getElementById('tooltip');
+    const meta = document.getElementById('meta');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight - 72;
+      draw();
+    }
+
+    window.addEventListener('resize', resize);
+
+    let graph = { nodes: [], edges: [] };
+
+    fetch('/static/constellation.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load constellation data');
+        return res.json();
+      })
+      .then((data) => {
+        graph = data;
+        meta.textContent = `Generated ${new Date(data.generated_at).toLocaleString()} · ${data.nodes.length} pages · ${data.edges.length} links`;
+        layout();
+        resize();
+      })
+      .catch((err) => {
+        console.error(err);
+        meta.textContent = 'Unable to load constellation data.';
+      });
+
+    function layout() {
+      const nodes = graph.nodes;
+      const edges = graph.edges;
+      const width = window.innerWidth;
+      const height = window.innerHeight - 72;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.max(Math.min(width, height) / 2 - 60, 100);
+
+      nodes.forEach((node, index) => {
+        const angle = (index / nodes.length) * Math.PI * 2;
+        const jitter = Math.log(node.outbound + 2);
+        node.x = centerX + (radius + jitter * 12) * Math.cos(angle);
+        node.y = centerY + (radius + jitter * 12) * Math.sin(angle);
+        node.r = 3 + Math.min(node.outbound, 20) * 0.4;
+      });
+
+      edges.forEach((edge) => {
+        const source = nodes.find((n) => n.slug === edge.source);
+        const target = nodes.find((n) => n.slug === edge.target);
+        if (source && target) {
+          edge._source = source;
+          edge._target = target;
+        }
+      });
+    }
+
+    function draw() {
+      if (!graph.nodes.length) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(137, 194, 255, 0.15)';
+      ctx.lineWidth = 1;
+      graph.edges.forEach((edge) => {
+        if (!edge._source || !edge._target) return;
+        ctx.beginPath();
+        ctx.moveTo(edge._source.x, edge._source.y);
+        ctx.lineTo(edge._target.x, edge._target.y);
+        ctx.stroke();
+      });
+
+      graph.nodes.forEach((node) => {
+        ctx.beginPath();
+        ctx.fillStyle = '#89c2ff';
+        ctx.shadowColor = '#1a3c7c';
+        ctx.shadowBlur = 8;
+        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+    }
+
+    canvas.addEventListener('mousemove', (event) => {
+      if (!graph.nodes.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const hit = graph.nodes.find((node) => {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        return Math.sqrt(dx*dx + dy*dy) <= node.r + 2;
+      });
+      if (hit) {
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${event.clientX + 12}px`;
+        tooltip.style.top = `${event.clientY + 12}px`;
+        tooltip.textContent = `${hit.slug} · outbound links: ${hit.outbound}`;
+      } else {
+        tooltip.style.display = 'none';
+      }
+    });
+
+    canvas.addEventListener('click', (event) => {
+      if (!graph.nodes.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const hit = graph.nodes.find((node) => {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        return Math.sqrt(dx*dx + dy*dy) <= node.r + 2;
+      });
+      if (hit) {
+        window.location.href = `/wiki/${encodeURIComponent(hit.slug)}`;
+      }
+    });
+  </script>
+</body>
+</html>

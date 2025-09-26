@@ -61,20 +61,21 @@ func injectOrigin(href, origin string) string {
 }
 
 func hasLinkTo(content, target string) bool {
-	target = strings.ToLower(target)
-	for _, slug := range linkedSlugs(content) {
-		if slug == target {
-			return true
-		}
-	}
-	return false
+    target = strings.ToLower(target)
+    for _, slug := range ExtractLinkedSlugs(content) {
+        if slug == target {
+            return true
+        }
+    }
+    return false
 }
 
-func linkedSlugs(content string) []string {
-	matches := wikiHref.FindAllStringSubmatch(content, -1)
-	if len(matches) == 0 {
-		return nil
-	}
+// ExtractLinkedSlugs returns normalised wiki slugs referenced within HTML content.
+func ExtractLinkedSlugs(content string) []string {
+    matches := wikiHref.FindAllStringSubmatch(content, -1)
+    if len(matches) == 0 {
+        return nil
+    }
 
 	seen := make(map[string]struct{})
 	for _, match := range matches {
@@ -91,11 +92,11 @@ func linkedSlugs(content string) []string {
 		}
 	}
 
-	result := make([]string, 0, len(seen))
-	for slug := range seen {
-		result = append(result, slug)
-	}
-	return result
+    result := make([]string, 0, len(seen))
+    for slug := range seen {
+        result = append(result, slug)
+    }
+    return result
 }
 
 func slugFromHref(href string) string {

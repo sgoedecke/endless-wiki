@@ -22,6 +22,7 @@ Bootstrap SQL lives in `db/migrations/001_create_pages.sql`.
 - Prompt nudges the model to include 3–6 internal wiki links using `<a href="/wiki/...">` anchors.
 - If `GROQ_API_KEY` is missing, a deterministic stub generator returns placeholder content for local development.
 - A lightweight search endpoint (`/search?q=`) surfaces previously generated pages via a simple MySQL `LIKE` query.
+- A constellation exporter (`go run ./cmd/constellation`) snapshots the wiki link graph into `static/constellation.json` for visualisation.
 
 ## Running locally
 ```bash
@@ -34,7 +35,19 @@ export PORT=8080
 GOCACHE=$(pwd)/.gocache go run ./cmd/endlesswiki
 ```
 
-Open `http://localhost:8080/wiki/main_page` (or hit `/`, which redirects there) and follow internal links to generate pages. The chrome exposes search, random (`/random`), and most-recent (`/recent`) entry points across the site.
+Open `http://localhost:8080/wiki/main_page` (or hit `/`, which redirects there) and follow internal links to generate pages. The chrome exposes search, random (`/random`), most-recent (`/recent`), and the constellation map (`/constellation`) once a snapshot has been generated.
+
+### Constellation exporter
+
+```bash
+# produce static/constellation.json
+GOCACHE=$(pwd)/.gocache go run ./cmd/constellation
+
+# optional: choose a different destination
+GOCACHE=$(pwd)/.gocache go run ./cmd/constellation -out /tmp/constellation.json
+```
+
+Run the exporter before building/deploying to refresh `static/constellation.json`. The `/constellation` page serves `static/constellation.html`, which visualises the generated snapshot directly in the browser.
 
 ## Railway deployment
 - Railway typically exposes `PORT` automatically.
