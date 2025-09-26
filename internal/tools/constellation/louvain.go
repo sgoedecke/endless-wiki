@@ -1,33 +1,36 @@
 package constellation
 
 import (
-	"math"
 	"math/rand"
-	"sort"
 )
 
-type louvainPair struct {
-	a int
-	b int
+type neighbor struct {
+	node   int
+	weight float64
 }
 
 type louvainGraph struct {
-	nodes       []int
-	edges       map[louvainPair]float64
-	adjacency   map[int]map[int]float64
-	degree      map[int]float64
-	loops       map[int]float64
+	adjacency   [][]neighbor
+	degree      []float64
+	loops       []float64
 	totalWeight float64
 }
 
 type louvainStatus struct {
-	nodeCommunity     map[int]int
-	communityDegree   map[int]float64
-	communityInternal map[int]float64
-	nodeDegree        map[int]float64
-	loops             map[int]float64
+	nodeCommunity     []int
+	communityDegree   []float64
+	communityInternal []float64
+	nodeDegree        []float64
+	loops             []float64
 	totalWeight       float64
 }
+
+type neighborAccumulator struct {
+	weights map[int]float64
+	keys    []int
+}
+
+var rng = rand.New(rand.NewSource(42))
 
 func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 	if len(slugs) == 0 {
@@ -35,68 +38,66 @@ func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 	}
 
 	indexBySlug := make(map[string]int, len(slugs))
-	nodes := make([]int, len(slugs))
 	for i, slug := range slugs {
 		indexBySlug[slug] = i
-		nodes[i] = i
 	}
 
-	edgeMap := make(map[louvainPair]float64)
-	for _, e := range edges {
-		src, okSrc := indexBySlug[e.Source]
-		dst, okDst := indexBySlug[e.Target]
-		if !okSrc || !okDst {
-			continue
-		}
-		if src == dst {
-			continue
-		}
-		a, b := src, dst
-		if a > b {
-			a, b = b, a
-		}
-		key := louvainPair{a: a, b: b}
-		edgeMap[key] += 1
-	}
+	graph := buildGraph(len(slugs), indexBySlug, edges)
 
-	graph := buildLouvainGraph(nodes, edgeMap)
-	clusters := louvain(graph)
+	partition := louvain(graph)
 
 	result := make(map[string]int, len(slugs))
 	for slug, idx := range indexBySlug {
-		result[slug] = clusters[idx]
+		result[slug] = partition[idx]
 	}
 	return result
 }
 
-func buildLouvainGraph(nodes []int, edges map[louvainPair]float64) louvainGraph {
-	adjacency := make(map[int]map[int]float64, len(nodes))
-	degree := make(map[int]float64, len(nodes))
-	loops := make(map[int]float64)
-	totalWeight := 0.0
+func buildGraph(nodeCount int, indexBySlug map[string]int, edges []Edge) louvainGraph {
+	adjTemp := make([]map[int]float64, nodeCount)
+	degree := make([]float64, nodeCount)
+	loops := make([]float64, nodeCount)
+	var totalWeight float64
 
-	for _, node := range nodes {
-		adjacency[node] = make(map[int]float64)
-		degree[node] = 0
-	}
-
-	for edge, weight := range edges {
-		totalWeight += weight
-		if edge.a == edge.b {
-			adjacency[edge.a][edge.a] += weight
-			loops[edge.a] += weight
-			degree[edge.a] += 2 * weight
+	for _, edge := range edges {
+		src, okSrc := indexBySlug[edge.Source]
+		dst, okDst := indexBySlug[edge.Target]
+		if !okSrc || !okDst {
 			continue
 		}
-		adjacency[edge.a][edge.b] += weight
-		adjacency[edge.b][edge.a] += weight
-		degree[edge.a] += weight
-		degree[edge.b] += weight
+		if src == dst {
+			loops[src]++
+			totalWeight++
+			continue
+		}
+
+		if adjTemp[src] == nil {
+			adjTemp[src] = make(map[int]float64)
+		}
+		if adjTemp[dst] == nil {
+			adjTemp[dst] = make(map[int]float64)
+		}
+
+		adjTemp[src][dst]++
+		adjTemp[dst][src]++
+		degree[src]++
+		degree[dst]++
+		totalWeight++
+	}
+
+	adjacency := make([][]neighbor, nodeCount)
+	for node, neighbors := range adjTemp {
+		if len(neighbors) == 0 {
+			continue
+		}
+		adjList := make([]neighbor, 0, len(neighbors))
+		for target, weight := range neighbors {
+			adjList = append(adjList, neighbor{node: target, weight: weight})
+		}
+		adjacency[node] = adjList
 	}
 
 	return louvainGraph{
-		nodes:       append([]int(nil), nodes...),
-		edges:       edges,
 		adjacency:   adjacency,
 		degree:      degree,
 		loops:       loops,
@@ -104,16 +105,17 @@ func buildLouvainGraph(nodes []int, edges map[louvainPair]float64) louvainGraph 
 	}
 }
 
-func louvain(graph louvainGraph) map[int]int {
-	if len(graph.nodes) == 0 {
-		return map[int]int{}
+func louvain(graph louvainGraph) []int {
+	if len(graph.adjacency) == 0 {
+		return []int{}
 	}
 
 	status := initStatus(graph)
-	dendrogram := make([]map[int]int, 0)
+	dendrogram := make([][]int, 0, 4)
+	acc := newNeighborAccumulator()
 
 	for {
-		moved := oneLevel(graph, status)
+		moved := oneLevel(graph, status, acc)
 		partition := renumber(status.nodeCommunity)
 		dendrogram = append(dendrogram, partition)
 		if !moved {
@@ -128,14 +130,15 @@ func louvain(graph louvainGraph) map[int]int {
 }
 
 func initStatus(graph louvainGraph) *louvainStatus {
-	nodeCommunity := make(map[int]int, len(graph.nodes))
-	communityDegree := make(map[int]float64, len(graph.nodes))
-	communityInternal := make(map[int]float64, len(graph.nodes))
+	n := len(graph.adjacency)
+	nodeCommunity := make([]int, n)
+	communityDegree := make([]float64, n)
+	communityInternal := make([]float64, n)
 
-	for _, node := range graph.nodes {
-		nodeCommunity[node] = node
-		communityDegree[node] = graph.degree[node]
-		communityInternal[node] = graph.loops[node]
+	for i := 0; i < n; i++ {
+		nodeCommunity[i] = i
+		communityDegree[i] = graph.degree[i]
+		communityInternal[i] = graph.loops[i]
 	}
 
 	return &louvainStatus{
@@ -148,12 +151,19 @@ func initStatus(graph louvainGraph) *louvainStatus {
 	}
 }
 
-func oneLevel(graph louvainGraph, status *louvainStatus) bool {
-	if len(graph.nodes) == 0 {
+func oneLevel(graph louvainGraph, status *louvainStatus, acc *neighborAccumulator) bool {
+	n := len(graph.adjacency)
+	if n == 0 {
 		return false
 	}
-	nodes := append([]int(nil), graph.nodes...)
-	shuffle(nodes)
+
+	nodes := make([]int, n)
+	for i := 0; i < n; i++ {
+		nodes[i] = i
+	}
+	rng.Shuffle(n, func(i, j int) {
+		nodes[i], nodes[j] = nodes[j], nodes[i]
+	})
 
 	movedAny := false
 	improved := true
@@ -163,8 +173,8 @@ func oneLevel(graph louvainGraph, status *louvainStatus) bool {
 		for _, node := range nodes {
 			currentCommunity := status.nodeCommunity[node]
 			nodeDegree := status.nodeDegree[node]
-			neighComWeights := neighborCommunities(node, graph, status)
-			weightInCurrent := neighComWeights[currentCommunity]
+			neighborWeights := neighborCommunities(node, graph, status, acc)
+			weightInCurrent := neighborWeights.get(currentCommunity)
 			status.remove(node, currentCommunity, weightInCurrent)
 
 			bestCommunity := currentCommunity
@@ -172,9 +182,10 @@ func oneLevel(graph louvainGraph, status *louvainStatus) bool {
 			m2 := 2 * status.totalWeight
 
 			if nodeDegree == 0 || m2 == 0 {
-				// Isolated node, stay in place
+				// isolated node stays put
 			} else {
-				for community, weight := range neighComWeights {
+				for _, community := range neighborWeights.keys {
+					weight := neighborWeights.weights[community]
 					increase := weight - (status.communityDegree[community]*nodeDegree)/m2
 					if increase > bestIncrease {
 						bestIncrease = increase
@@ -183,7 +194,7 @@ func oneLevel(graph louvainGraph, status *louvainStatus) bool {
 				}
 			}
 
-			status.insert(node, bestCommunity, neighComWeights[bestCommunity])
+			status.insert(node, bestCommunity, neighborWeights.get(bestCommunity))
 			if bestCommunity != currentCommunity {
 				improved = true
 				movedAny = true
@@ -194,16 +205,19 @@ func oneLevel(graph louvainGraph, status *louvainStatus) bool {
 	return movedAny
 }
 
-func neighborCommunities(node int, graph louvainGraph, status *louvainStatus) map[int]float64 {
-	result := make(map[int]float64)
-	for neighbor, weight := range graph.adjacency[node] {
-		if neighbor == node {
+func neighborCommunities(node int, graph louvainGraph, status *louvainStatus, acc *neighborAccumulator) *neighborAccumulator {
+	acc.reset()
+	for _, nb := range graph.adjacency[node] {
+		if nb.node == node {
 			continue
 		}
-		community := status.nodeCommunity[neighbor]
-		result[community] += weight
+		community := status.nodeCommunity[nb.node]
+		if community == -1 {
+			continue
+		}
+		acc.add(community, nb.weight)
 	}
-	return result
+	return acc
 }
 
 func (s *louvainStatus) remove(node, community int, weightInCommunity float64) {
@@ -218,78 +232,131 @@ func (s *louvainStatus) insert(node, community int, weightInCommunity float64) {
 	s.communityInternal[community] += 2*weightInCommunity + s.loops[node]
 }
 
-func renumber(partition map[int]int) map[int]int {
-	mapping := make(map[int]int)
+func renumber(partition []int) []int {
+	mapping := make(map[int]int, len(partition))
+	result := make([]int, len(partition))
 	next := 0
-	result := make(map[int]int, len(partition))
-	keys := make([]int, 0, len(partition))
-	for node := range partition {
-		keys = append(keys, node)
-	}
-	sort.Ints(keys)
-	for _, node := range keys {
-		community := partition[node]
+	for idx, community := range partition {
 		id, ok := mapping[community]
 		if !ok {
 			id = next
 			mapping[community] = id
 			next++
 		}
-		result[node] = id
+		result[idx] = id
 	}
 	return result
 }
 
-func inducedGraph(partition map[int]int, graph louvainGraph) louvainGraph {
+func inducedGraph(partition []int, graph louvainGraph) louvainGraph {
+	if len(partition) == 0 {
+		return louvainGraph{}
+	}
+
 	numCommunities := 0
 	for _, community := range partition {
 		if community+1 > numCommunities {
 			numCommunities = community + 1
 		}
 	}
-	nodes := make([]int, numCommunities)
-	for i := 0; i < numCommunities; i++ {
-		nodes[i] = i
-	}
 
-	newEdges := make(map[louvainPair]float64)
-	for edge, weight := range graph.edges {
-		communityA := partition[edge.a]
-		communityB := partition[edge.b]
-		if communityA > communityB {
-			communityA, communityB = communityB, communityA
+	adjTemp := make([]map[int]float64, numCommunities)
+	degree := make([]float64, numCommunities)
+	loops := make([]float64, numCommunities)
+	var totalWeight float64
+
+	for node, neighbors := range graph.adjacency {
+		commA := partition[node]
+		for _, nb := range neighbors {
+			if nb.node < node {
+				continue
+			}
+			commB := partition[nb.node]
+			weight := nb.weight
+
+			if commA == commB {
+				loops[commA] += weight
+				degree[commA] += 2 * weight
+			} else {
+				if adjTemp[commA] == nil {
+					adjTemp[commA] = make(map[int]float64)
+				}
+				if adjTemp[commB] == nil {
+					adjTemp[commB] = make(map[int]float64)
+				}
+				adjTemp[commA][commB] += weight
+				adjTemp[commB][commA] += weight
+				degree[commA] += weight
+				degree[commB] += weight
+			}
+			totalWeight += weight
 		}
-		key := louvainPair{a: communityA, b: communityB}
-		newEdges[key] += weight
 	}
 
-	return buildLouvainGraph(nodes, newEdges)
+	adjacency := make([][]neighbor, numCommunities)
+	for community, neighbors := range adjTemp {
+		if len(neighbors) == 0 {
+			continue
+		}
+		adjList := make([]neighbor, 0, len(neighbors))
+		for target, weight := range neighbors {
+			adjList = append(adjList, neighbor{node: target, weight: weight})
+		}
+		adjacency[community] = adjList
+	}
+
+	return louvainGraph{
+		adjacency:   adjacency,
+		degree:      degree,
+		loops:       loops,
+		totalWeight: totalWeight,
+	}
 }
 
-func partitionAtLevel(dendrogram []map[int]int, level int) map[int]int {
+func partitionAtLevel(dendrogram [][]int, level int) []int {
 	if len(dendrogram) == 0 || level < 0 {
-		return map[int]int{}
+		return []int{}
 	}
-	level = int(math.Min(float64(level), float64(len(dendrogram)-1)))
-
-	result := make(map[int]int)
-	for node, community := range dendrogram[0] {
-		result[node] = community
+	if level >= len(dendrogram) {
+		level = len(dendrogram) - 1
 	}
 
+	result := append([]int(nil), dendrogram[0]...)
 	for i := 1; i <= level; i++ {
 		next := dendrogram[i]
-		for node := range result {
-			result[node] = next[result[node]]
+		for idx := range result {
+			result[idx] = next[result[idx]]
 		}
 	}
 	return result
 }
 
-func shuffle(values []int) {
-	rng := rand.New(rand.NewSource(42))
-	for i := len(values) - 1; i > 0; i-- {
-		j := rng.Intn(i + 1)
-		values[i], values[j] = values[j], values[i]
+func newNeighborAccumulator() *neighborAccumulator {
+	return &neighborAccumulator{
+		weights: make(map[int]float64, 8),
+		keys:    make([]int, 0, 8),
 	}
+}
+
+func (acc *neighborAccumulator) reset() {
+	for _, key := range acc.keys {
+		delete(acc.weights, key)
+	}
+	acc.keys = acc.keys[:0]
+}
+
+func (acc *neighborAccumulator) add(key int, weight float64) {
+	if _, ok := acc.weights[key]; !ok {
+		acc.weights[key] = weight
+		acc.keys = append(acc.keys, key)
+		return
+	}
+	acc.weights[key] += weight
+}
+
+func (acc *neighborAccumulator) get(key int) float64 {
+	if v, ok := acc.weights[key]; ok {
+		return v
+	}
+	return 0
 }

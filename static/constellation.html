@@ -7,36 +7,40 @@
   <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; background: #0b1026; color: #f8f8ff; display: flex; flex-direction: column; height: 100vh; }
-    header { padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-    header h1 { margin: 0 0 6px; font-size: 20px; }
-    header a { color: #89c2ff; text-decoration: none; font-size: 13px; }
-    #meta { font-size: 13px; color: rgba(255,255,255,0.7); }
+    body { margin: 0; font-family: "Helvetica Neue","Helvetica","Arial",sans-serif; background: #050816; color: #f2f6ff; display: flex; flex-direction: column; height: 100vh; }
+    header { padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    header h1 { margin: 0 0 6px; font-size: 20px; letter-spacing: 0.01em; }
+    header a { color: #8fc7ff; text-decoration: none; font-size: 13px; }
+    #meta { font-size: 13px; color: rgba(255,255,255,0.68); }
     #content { flex: 1 1 auto; display: flex; min-height: 0; }
-    #sidebar { width: 320px; flex: 0 0 320px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.08); background: rgba(8,13,34,0.9); }
+    #sidebar { width: 320px; flex: 0 0 320px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.08); background: rgba(7,11,30,0.92); }
     #sidebar h2 { margin: 0; font-size: 16px; }
-    #sidebar .sidebar-head { padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    #cluster-summary { margin: 6px 0 0; font-size: 13px; color: rgba(255,255,255,0.6); }
+    #sidebar .sidebar-head { padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: grid; gap: 6px; }
+    #sidebar .sidebar-head small { color: rgba(255,255,255,0.55); font-size: 12px; }
+    #cluster-summary { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.4; }
     #cluster-list-container { flex: 1 1 auto; overflow-y: auto; padding: 8px 0; }
     #cluster-list { list-style: none; margin: 0; padding: 0; }
-    #cluster-list li { margin: 0; padding: 0; }
+    #cluster-list li { margin: 0; }
     #cluster-list button { width: 100%; padding: 10px 18px; background: transparent; border: none; color: inherit; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; font-size: 13px; text-align: left; transition: background 0.15s ease, transform 0.15s ease; }
-    #cluster-list button:hover { background: rgba(137,194,255,0.08); }
-    #cluster-list button.selected { background: rgba(137,194,255,0.18); transform: translateX(1px); }
+    #cluster-list button:hover { background: rgba(143,199,255,0.09); }
+    #cluster-list button.selected { background: rgba(143,199,255,0.18); transform: translateX(1px); }
     #cluster-list .cluster-label { display: flex; align-items: center; gap: 8px; }
-    .cluster-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; box-shadow: 0 0 10px rgba(137,194,255,0.4); }
-    .cluster-count { font-size: 12px; color: rgba(255,255,255,0.55); }
-    #cluster-details { flex: 0 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding: 16px 20px; max-height: 40%; overflow-y: auto; }
-    #cluster-details h3 { margin: 0 0 8px; font-size: 15px; }
-    #cluster-details p { margin: 0 0 12px; font-size: 13px; color: rgba(255,255,255,0.7); }
-    #cluster-details ol { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 8px; }
+    .cluster-swatch { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px rgba(143,199,255,0.45); }
+    .cluster-count { font-size: 12px; color: rgba(255,255,255,0.6); }
+    #cluster-details { flex: 0 0 auto; border-top: 1px solid rgba(255,255,255,0.08); padding: 16px 20px; max-height: 44%; overflow-y: auto; display: grid; gap: 12px; }
+    #cluster-details h3 { margin: 0; font-size: 15px; }
+    #cluster-details p { margin: 0; font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.5; }
+    #cluster-details dl { margin: 0; display: grid; grid-template-columns: max-content auto; gap: 4px 12px; font-size: 12px; color: rgba(255,255,255,0.62); }
+    #cluster-details dl dt { font-weight: 600; }
+    #cluster-details dl dd { margin: 0; }
+    #cluster-details ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13px; }
     #cluster-details li { display: flex; justify-content: space-between; gap: 12px; }
-    #cluster-details a { color: #89c2ff; text-decoration: none; }
+    #cluster-details a { color: #8fc7ff; text-decoration: none; }
     #cluster-details a:hover { text-decoration: underline; }
     .node-metric { color: rgba(255,255,255,0.55); font-size: 12px; white-space: nowrap; }
-    #main { flex: 1 1 auto; position: relative; background: #03071d; }
+    #main { flex: 1 1 auto; position: relative; background: radial-gradient(circle at top, rgba(40,72,140,0.25), transparent 60%), #030616; }
     #canvas { display: block; width: 100%; height: 100%; }
-    #tooltip { position: fixed; pointer-events: none; background: rgba(11,16,38,0.92); color: #fff; padding: 6px 10px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(255,255,255,0.2); display: none; max-width: 260px; line-height: 1.4; }
+    #tooltip { position: fixed; pointer-events: none; background: rgba(7,11,30,0.92); color: #fff; padding: 7px 11px; border-radius: 4px; font-size: 12px; border: 1px solid rgba(255,255,255,0.18); display: none; max-width: 240px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
     @media (max-width: 960px) {
       #sidebar { width: 260px; flex-basis: 260px; }
       #cluster-list button { padding: 10px 14px; }
@@ -44,8 +48,8 @@
     @media (max-width: 720px) {
       body { flex-direction: column; }
       #content { flex-direction: column; }
-      #sidebar { width: 100%; flex-basis: 220px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
-      #main { flex: 1 1 auto; height: calc(100vh - 220px - 72px); }
+      #sidebar { width: 100%; flex-basis: 240px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      #main { flex: 1 1 auto; height: calc(100vh - 240px - 72px); }
     }
   </style>
 </head>
@@ -61,13 +65,14 @@
     <aside id="sidebar">
       <div class="sidebar-head">
         <h2>Clusters</h2>
+        <small>Communities discovered with Louvain modularity</small>
         <div id="cluster-summary">Preparing cluster view…</div>
       </div>
       <div id="cluster-list-container">
         <ul id="cluster-list"></ul>
       </div>
       <div id="cluster-details">
-        <p>Select a cluster to explore its pages.</p>
+        <p>Select a cluster to explore representative pages and link patterns.</p>
       </div>
     </aside>
     <div id="main">
@@ -85,21 +90,22 @@
     const clusterSummaryEl = document.getElementById('cluster-summary');
     const clusterDetailsEl = document.getElementById('cluster-details');
 
-    let graph = { nodes: [], edges: [] };
-    let nodes = [];
-    let edges = [];
+    let graph = null;
     let clusters = [];
     let clusterById = new Map();
+    let links = [];
+    let maxLinkWeight = 1;
     let activeCluster = null;
     let hoverCluster = null;
 
     function resize() {
       canvas.width = main.clientWidth;
       canvas.height = main.clientHeight;
-      if (nodes.length) {
-        computeLayout();
-        draw();
+      if (!clusters.length) {
+        return;
       }
+      computeLayout();
+      draw();
     }
 
     window.addEventListener('resize', resize);
@@ -123,77 +129,72 @@
       });
 
     function prepareGraph() {
-      nodes = graph.nodes.map((node) => ({
-        ...node,
-        createdAt: node.created_at ? new Date(node.created_at) : null,
-        cluster: typeof node.cluster === 'number' ? node.cluster : 0,
-        r: 3 + Math.min(node.outbound ?? 0, 30) * 0.35,
-        x: 0,
-        y: 0,
-      }));
+      if (!graph) return;
+      const rawClusters = Array.isArray(graph.clusters) ? graph.clusters.slice() : [];
+      rawClusters.sort((a, b) => (b.size ?? 0) - (a.size ?? 0));
 
-      const nodeMap = new Map(nodes.map((n) => [n.slug, n]));
-      edges = graph.edges
-        .map((edge) => {
-          const source = nodeMap.get(edge.source);
-          const target = nodeMap.get(edge.target);
-          if (!source || !target) return null;
-          return { ...edge, _source: source, _target: target };
-        })
-        .filter(Boolean);
-
-      const grouped = new Map();
-      nodes.forEach((node) => {
-        const key = node.cluster;
-        if (!grouped.has(key)) grouped.set(key, []);
-        grouped.get(key).push(node);
+      clusters = rawClusters.map((cluster, index) => {
+        const oldest = parseDate(cluster.oldest_created_at);
+        const newest = parseDate(cluster.newest_created_at);
+        const sample = Array.isArray(cluster.sample) ? cluster.sample : [];
+        return {
+          id: cluster.id,
+          size: cluster.size ?? sample.length,
+          sample,
+          internalLinks: cluster.internal_links ?? 0,
+          externalLinks: cluster.external_links ?? 0,
+          oldestCreated: oldest,
+          newestCreated: newest,
+          label: `Cluster ${index + 1}`,
+          displayIndex: index,
+          color: clusterColor(index),
+          edgeColor: clusterEdgeColor(index),
+          x: 0,
+          y: 0,
+          radius: 24,
+        };
       });
-
-      if (!grouped.size) {
-        grouped.set(0, nodes.slice());
-      }
-
-      clusters = Array.from(grouped.entries()).map(([id, members]) => ({
-        id,
-        nodes: members.sort((a, b) => {
-          if (a.createdAt && b.createdAt) return a.createdAt - b.createdAt;
-          if (a.createdAt) return -1;
-          if (b.createdAt) return 1;
-          return a.slug.localeCompare(b.slug);
-        }),
-      }));
-
-      clusters.sort((a, b) => b.nodes.length - a.nodes.length);
 
       clusterById = new Map();
-      clusters.forEach((cluster, index) => {
-        cluster.index = index;
-        cluster.label = `Cluster ${index + 1}`;
-        cluster.color = clusterColor(index);
-        cluster.edgeColor = clusterEdgeColor(index);
-        cluster.nodes.forEach((node) => {
-          node.cluster = cluster.id;
-          node.clusterIndex = index;
-          node.clusterLabel = cluster.label;
-          node.color = cluster.color;
-        });
+      clusters.forEach((cluster) => {
         clusterById.set(cluster.id, cluster);
       });
+
+      links = Array.isArray(graph.links)
+        ? graph.links
+            .map((link) => {
+              const source = clusterById.get(link.source);
+              const target = clusterById.get(link.target);
+              if (!source || !target) return null;
+              return {
+                source,
+                target,
+                weight: link.weight ?? 0,
+              };
+            })
+            .filter(Boolean)
+        : [];
+
+      maxLinkWeight = links.reduce((max, link) => Math.max(max, link.weight), 1);
     }
 
     function updateMeta() {
+      if (!graph) return;
       const generated = graph.generated_at ? new Date(graph.generated_at).toLocaleString() : 'unknown time';
+      const totals = graph.totals || {};
       const clusterCount = clusters.length;
-      meta.textContent = `Generated ${generated} · ${nodes.length} pages · ${edges.length} links · ${clusterCount} clusters`;
+      const pages = totals.pages ?? 0;
+      const linksCount = totals.links ?? 0;
+      meta.textContent = `Generated ${generated} · ${pages} pages · ${linksCount} links · ${clusterCount} clusters`;
 
-      if (clusterCount === 0) {
+      if (!clusterCount) {
         clusterSummaryEl.textContent = 'No clusters detected.';
         return;
       }
 
-      const largest = clusters[0].nodes.length;
-      const share = nodes.length ? ((largest / nodes.length) * 100).toFixed(1) : '0.0';
-      clusterSummaryEl.textContent = `${clusterCount} clusters · largest holds ${largest} pages (${share}%)`;
+      const largest = clusters[0];
+      const share = pages ? ((largest.size / pages) * 100).toFixed(1) : '0.0';
+      clusterSummaryEl.textContent = `${clusterCount} clusters · largest holds ${largest.size} pages (${share}%)`;
     }
 
     function buildClusterList() {
@@ -213,7 +214,7 @@
         label.appendChild(name);
         const count = document.createElement('span');
         count.className = 'cluster-count';
-        count.textContent = `${cluster.nodes.length} pages`;
+        count.textContent = `${cluster.size} pages`;
         button.appendChild(label);
         button.appendChild(count);
         button.addEventListener('click', () => toggleCluster(cluster.id));
@@ -233,8 +234,8 @@
         li.appendChild(button);
         clusterListEl.appendChild(li);
       });
-      updateClusterDetails();
       updateClusterButtons();
+      updateClusterDetails();
     }
 
     function toggleCluster(clusterId) {
@@ -259,9 +260,9 @@
       clusterDetailsEl.innerHTML = '';
       const targetId = activeCluster !== null ? activeCluster : hoverCluster;
       if (targetId === null) {
-        const defaultMsg = document.createElement('p');
-        defaultMsg.textContent = 'Select a cluster to explore its pages.';
-        clusterDetailsEl.appendChild(defaultMsg);
+        const message = document.createElement('p');
+        message.textContent = 'Select a cluster to explore representative pages and link patterns.';
+        clusterDetailsEl.appendChild(message);
         return;
       }
       const cluster = clusterById.get(targetId);
@@ -271,170 +272,230 @@
         clusterDetailsEl.appendChild(missing);
         return;
       }
-      const share = nodes.length ? ((cluster.nodes.length / nodes.length) * 100).toFixed(1) : '0.0';
+
       const title = document.createElement('h3');
       title.textContent = cluster.label;
       clusterDetailsEl.appendChild(title);
 
       const summary = document.createElement('p');
-      summary.textContent = `${cluster.nodes.length} pages · ${share}% of the wiki`;
+      const totalPages = graph?.totals?.pages ?? 0;
+      const share = totalPages ? ((cluster.size / totalPages) * 100).toFixed(1) : '0.0';
+      summary.textContent = `${cluster.size} pages · ${share}% of the wiki`;
       clusterDetailsEl.appendChild(summary);
 
-      const list = document.createElement('ol');
-      const topNodes = cluster.nodes
-        .slice()
-        .sort((a, b) => {
-          if ((b.outbound ?? 0) === (a.outbound ?? 0)) return a.slug.localeCompare(b.slug);
-          return (b.outbound ?? 0) - (a.outbound ?? 0);
-        })
-        .slice(0, 12);
+      const statsList = document.createElement('dl');
+      statsList.appendChild(statItem('Internal links', formatNumber(cluster.internalLinks)));
+      statsList.appendChild(statItem('External links', formatNumber(cluster.externalLinks)));
+      const window = describeDateWindow(cluster.oldestCreated, cluster.newestCreated);
+      statsList.appendChild(statItem('Created window', window));
+      clusterDetailsEl.appendChild(statsList);
 
-      topNodes.forEach((node) => {
-        const item = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = `/wiki/${encodeURIComponent(node.slug)}`;
-        link.textContent = node.slug;
-        const metric = document.createElement('span');
-        metric.className = 'node-metric';
-        metric.textContent = `${node.outbound ?? 0} outbound`;
-        item.appendChild(link);
-        item.appendChild(metric);
-        list.appendChild(item);
-      });
-
-      if (!topNodes.length) {
+      const sample = cluster.sample.slice(0, 15);
+      if (!sample.length) {
         const empty = document.createElement('p');
-        empty.textContent = 'This cluster currently has no linked pages.';
+        empty.textContent = 'No representative pages recorded yet.';
         clusterDetailsEl.appendChild(empty);
       } else {
+        const list = document.createElement('ol');
+        sample.forEach((member) => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = `/wiki/${encodeURIComponent(member.slug)}`;
+          link.textContent = member.slug;
+          const metric = document.createElement('span');
+          metric.className = 'node-metric';
+          metric.textContent = `${member.outbound ?? 0} outbound`;
+          item.appendChild(link);
+          item.appendChild(metric);
+          list.appendChild(item);
+        });
         clusterDetailsEl.appendChild(list);
       }
     }
 
+    function statItem(label, value) {
+      const frag = document.createDocumentFragment();
+      const dt = document.createElement('dt');
+      dt.textContent = label;
+      const dd = document.createElement('dd');
+      dd.textContent = value;
+      frag.appendChild(dt);
+      frag.appendChild(dd);
+      return frag;
+    }
+
     function computeLayout() {
-      if (!nodes.length) return;
       const width = canvas.width;
       const height = canvas.height;
-      const clusterCount = Math.max(clusters.length, 1);
-      const columns = Math.ceil(Math.sqrt(clusterCount));
-      const rows = Math.ceil(clusterCount / columns);
-      const cellWidth = width / columns;
-      const cellHeight = height / rows;
-      const marginX = Math.min(32, cellWidth * 0.12);
-      const marginY = Math.min(32, cellHeight * 0.12);
+      if (!width || !height) return;
+      const centerX = width / 2;
+      const centerY = height / 2;
       const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      const spread = Math.min(width, height) * 0.42;
+      const maxSize = clusters.length ? clusters[0].size : 1;
+      const minRadius = Math.min(width, height) * 0.022;
+      const maxRadius = Math.min(width, height) * 0.08;
 
       clusters.forEach((cluster, index) => {
-        const col = index % columns;
-        const row = Math.floor(index / columns);
-        const centerX = col * cellWidth + cellWidth / 2;
-        const centerY = row * cellHeight + cellHeight / 2;
-        const radius = Math.max(Math.min(cellWidth, cellHeight) / 2 - Math.max(marginX, marginY), 60);
-        if (cluster.nodes.length === 1) {
-          const node = cluster.nodes[0];
-          node.x = centerX;
-          node.y = centerY;
-          return;
-        }
-        const scale = radius / Math.sqrt(cluster.nodes.length + 0.5);
-        cluster.nodes.forEach((node, idx) => {
-          const r = scale * Math.sqrt(idx + 0.8);
-          const angle = idx * goldenAngle;
-          node.x = centerX + r * Math.cos(angle);
-          node.y = centerY + r * Math.sin(angle);
-        });
+        const radiusScale = Math.sqrt((cluster.size || 1) / maxSize);
+        cluster.radius = clamp(minRadius + radiusScale * (maxRadius - minRadius), minRadius, maxRadius);
+        const r = Math.sqrt(index + 0.8) / Math.sqrt(clusters.length + 0.2);
+        const distance = 40 + r * spread;
+        const angle = index * goldenAngle;
+        cluster.x = centerX + distance * Math.cos(angle);
+        cluster.y = centerY + distance * Math.sin(angle);
+        cluster.x = clamp(cluster.x, cluster.radius + 12, width - cluster.radius - 12);
+        cluster.y = clamp(cluster.y, cluster.radius + 12, height - cluster.radius - 12);
       });
     }
 
     function draw() {
-      if (!nodes.length) return;
+      if (!clusters.length) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const focusCluster = activeCluster !== null ? activeCluster : hoverCluster;
-      const hasFocus = focusCluster !== null;
+      const focusId = activeCluster !== null ? activeCluster : hoverCluster;
+      const hasFocus = focusId !== null;
 
-      edges.forEach((edge) => {
-        const sameCluster = edge._source.cluster === edge._target.cluster;
-        const cluster = clusterById.get(edge._source.cluster);
-        const highlight = !hasFocus || (edge._source.cluster === focusCluster && edge._target.cluster === focusCluster);
+      links.forEach((link) => {
+        const { source, target, weight } = link;
+        const isFocus = !hasFocus || source.id === focusId || target.id === focusId;
+        const opacity = isFocus ? 0.32 : 0.08;
+        const width = 0.6 + (weight / maxLinkWeight) * 3.4;
+        const gradient = ctx.createLinearGradient(source.x, source.y, target.x, target.y);
+        gradient.addColorStop(0, source.edgeColor);
+        gradient.addColorStop(1, target.edgeColor);
+        ctx.save();
+        ctx.globalAlpha = opacity;
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = width;
         ctx.beginPath();
-        ctx.moveTo(edge._source.x, edge._source.y);
-        ctx.lineTo(edge._target.x, edge._target.y);
-        ctx.strokeStyle = sameCluster && cluster ? cluster.edgeColor : 'rgba(137, 194, 255, 0.08)';
-        ctx.globalAlpha = highlight ? (sameCluster ? 0.45 : 0.12) : 0.04;
-        ctx.lineWidth = sameCluster ? 1.4 : 1;
+        ctx.moveTo(source.x, source.y);
+        ctx.lineTo(target.x, target.y);
         ctx.stroke();
+        ctx.restore();
       });
-      ctx.globalAlpha = 1;
 
-      nodes.forEach((node) => {
-        const cluster = clusterById.get(node.cluster);
-        const highlight = !hasFocus || node.cluster === focusCluster;
-        const baseColor = cluster ? cluster.color : '#89c2ff';
+      clusters.forEach((cluster) => {
+        const highlight = !hasFocus || cluster.id === focusId;
+        ctx.save();
         ctx.beginPath();
-        ctx.fillStyle = baseColor;
-        ctx.globalAlpha = highlight ? 0.95 : 0.18;
-        ctx.shadowColor = highlight ? baseColor : 'transparent';
-        ctx.shadowBlur = highlight ? 18 : 0;
-        ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+        ctx.fillStyle = cluster.color;
+        ctx.globalAlpha = highlight ? 0.92 : 0.25;
+        ctx.shadowColor = highlight ? cluster.color : 'transparent';
+        ctx.shadowBlur = highlight ? 22 : 0;
+        ctx.arc(cluster.x, cluster.y, cluster.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = 'rgba(7,11,30,0.65)';
+        ctx.beginPath();
+        ctx.arc(cluster.x, cluster.y, Math.max(cluster.radius - 8, cluster.radius * 0.72), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f2f6ff';
+        ctx.font = `${Math.max(12, cluster.radius * 0.45)}px "Helvetica Neue",sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const label = cluster.size >= 1000 ? `${formatNumber(cluster.size / 1000)}k` : `${formatNumber(cluster.size)}`;
+        ctx.globalAlpha = highlight ? 0.92 : 0.42;
+        ctx.fillText(label, cluster.x, cluster.y);
+        ctx.restore();
       });
-      ctx.globalAlpha = 1;
     }
 
-    function findNodeAt(x, y) {
-      for (let i = nodes.length - 1; i >= 0; i--) {
-        const node = nodes[i];
-        const dx = node.x - x;
-        const dy = node.y - y;
-        if (Math.sqrt(dx * dx + dy * dy) <= node.r + 3) {
-          return node;
+    function findClusterAt(x, y) {
+      for (let i = clusters.length - 1; i >= 0; i--) {
+        const cluster = clusters[i];
+        const dx = cluster.x - x;
+        const dy = cluster.y - y;
+        if (Math.sqrt(dx * dx + dy * dy) <= cluster.radius + 6) {
+          return cluster;
         }
       }
       return null;
     }
 
     canvas.addEventListener('mousemove', (event) => {
-      if (!nodes.length) return;
+      if (!clusters.length) return;
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      const hit = findNodeAt(x, y);
+      const hit = findClusterAt(x, y);
       if (hit) {
-        const cluster = clusterById.get(hit.cluster);
+        setHover(hit.id);
         tooltip.style.display = 'block';
         tooltip.style.left = `${event.clientX + 12}px`;
         tooltip.style.top = `${event.clientY + 12}px`;
-        const clusterLabel = cluster ? cluster.label : 'Cluster';
-        tooltip.innerHTML = `<strong>${hit.slug}</strong><br>${clusterLabel} · ${hit.outbound ?? 0} outbound`;
+        const share = graph?.totals?.pages ? ((hit.size / graph.totals.pages) * 100).toFixed(1) : '0.0';
+        tooltip.innerHTML = `<strong>${hit.label}</strong><br>${formatNumber(hit.size)} pages · ${share}% of wiki<br>${formatNumber(hit.internalLinks)} internal · ${formatNumber(hit.externalLinks)} external`;
       } else {
+        setHover(null);
         tooltip.style.display = 'none';
       }
     });
 
     canvas.addEventListener('mouseleave', () => {
+      setHover(null);
       tooltip.style.display = 'none';
     });
 
     canvas.addEventListener('click', (event) => {
-      if (!nodes.length) return;
+      if (!clusters.length) return;
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      const hit = findNodeAt(x, y);
+      const hit = findClusterAt(x, y);
       if (hit) {
-        window.location.href = `/wiki/${encodeURIComponent(hit.slug)}`;
+        toggleCluster(hit.id);
       }
     });
 
+    function setHover(clusterId) {
+      if (activeCluster !== null) {
+        return;
+      }
+      if (hoverCluster === clusterId) {
+        return;
+      }
+      hoverCluster = clusterId;
+      updateClusterDetails();
+      draw();
+    }
+
     function clusterColor(index) {
-      const hue = (index * 58) % 360;
-      return `hsl(${hue}, 70%, 62%)`;
+      const hue = (index * 51) % 360;
+      return `hsl(${hue}, 72%, 60%)`;
     }
 
     function clusterEdgeColor(index) {
-      const hue = (index * 58) % 360;
-      return `hsla(${hue}, 70%, 62%, 0.32)`;
+      const hue = (index * 51) % 360;
+      return `hsla(${hue}, 72%, 60%, 0.35)`;
+    }
+
+    function formatNumber(value) {
+      if (typeof value !== 'number' || !Number.isFinite(value)) return '0';
+      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+      if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+      return value.toLocaleString();
+    }
+
+    function parseDate(value) {
+      if (!value) return null;
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime()) || date.getFullYear() < 1900) return null;
+      return date;
+    }
+
+    function describeDateWindow(oldest, newest) {
+      if (!oldest && !newest) return 'unknown';
+      if (oldest && newest) {
+        const sameDay = oldest.toDateString() === newest.toDateString();
+        return sameDay ? oldest.toLocaleDateString() : `${oldest.toLocaleDateString()} – ${newest.toLocaleDateString()}`;
+      }
+      if (newest) return `up to ${newest.toLocaleDateString()}`;
+      return oldest ? `since ${oldest.toLocaleDateString()}` : 'unknown';
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
     }
   </script>
 </body>

@@ -30,14 +30,14 @@ type Cluster struct {
 }
 
 type ClusterLink struct {
-    Source int `json:"source"`
-    Target int `json:"target"`
-    Weight int `json:"weight"`
+	Source int `json:"source"`
+	Target int `json:"target"`
+	Weight int `json:"weight"`
 }
 
 type Edge struct {
-    Source string `json:"source"`
-    Target string `json:"target"`
+	Source string `json:"source"`
+	Target string `json:"target"`
 }
 
 type Totals struct {
@@ -54,9 +54,9 @@ type Graph struct {
 }
 
 type pageRecord struct {
-    slug     string
-    created  time.Time
-    outbound int
+	slug     string
+	created  time.Time
+	outbound int
 }
 
 type clusterStats struct {
@@ -140,12 +140,12 @@ func Export(db *sql.DB, outPath string) (Graph, error) {
 
 	statsByCluster := make(map[int]*clusterStats)
 
-	for i, record := range pageRecords {
+	for _, record := range pageRecords {
 		clusterID, ok := clusterAssignments[record.slug]
 		if !ok {
 			continue
 		}
-        stats := statsByCluster[clusterID]
+		stats := statsByCluster[clusterID]
 		if stats == nil {
 			stats = &clusterStats{}
 			statsByCluster[clusterID] = stats

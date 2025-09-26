@@ -30,5 +30,5 @@ func main() {
 		log.Fatalf("export constellation: %v", err)
 	}
 
-	log.Printf("wrote constellation to %s (%d nodes, %d edges)", *outPath, len(g.Nodes), len(g.Edges))
+	log.Printf("wrote constellation to %s (%d clusters, %d pages, %d links)", *outPath, len(g.Clusters), g.Totals.Pages, g.Totals.Links)
 }
