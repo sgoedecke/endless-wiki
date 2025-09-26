@@ -148,7 +148,7 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 		})
 		if genErr != nil {
 			log.Printf("generate page %s: %v", slug, genErr)
-			http.Error(w, "failed to generate page", http.StatusInternalServerError)
+			http.Error(w, "failed to generate page (new generations are paused because someone was botting the wiki and costing me money)", http.StatusInternalServerError)
 			return
 		}
 
