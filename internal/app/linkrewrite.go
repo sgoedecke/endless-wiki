@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"html"
 	"net/url"
 	"regexp"
 	"sort"
@@ -52,8 +53,6 @@ func addOriginParam(content, origin string) string {
 	return content
 }
 
-var classAttr = regexp.MustCompile(`(?i)class=(['"])([^'"]*)(['"])`)
-
 func markMissingLinks(content string, missing map[string]struct{}) string {
 	matches := anchorTag.FindAllStringSubmatchIndex(content, -1)
 	if len(matches) == 0 {
@@ -81,13 +80,15 @@ func markMissingLinks(content string, missing map[string]struct{}) string {
 			continue
 		}
 
-		tag := content[tagStart:tagEnd]
-		updated := ensureClass(tag, "new-page")
-		if updated == tag {
+		restLower := strings.ToLower(content[tagEnd:])
+		closingIdx := strings.Index(restLower, "</a>")
+		if closingIdx == -1 {
 			continue
 		}
-
-		replacements = append(replacements, replacement{start: tagStart, end: tagEnd, text: updated})
+		anchorEnd := tagEnd + closingIdx + len("</a>")
+		inner := content[tagEnd : anchorEnd-len("</a>")]
+		span := buildMissingLinkSpan(hrefValue, inner)
+		replacements = append(replacements, replacement{start: tagStart, end: anchorEnd, text: span})
 	}
 
 	if len(replacements) == 0 {
@@ -112,31 +113,14 @@ func markMissingLinks(content string, missing map[string]struct{}) string {
 	return b.String()
 }
 
-func ensureClass(tag, className string) string {
-	loc := classAttr.FindStringSubmatchIndex(tag)
-	if loc == nil {
-		if len(tag) >= 2 && (tag[1] == 'a' || tag[1] == 'A') {
-			return tag[:2] + " class=\"" + className + "\"" + tag[2:]
-		}
-		return tag
-	}
-
-	quote := tag[loc[2]:loc[3]]
-	classes := tag[loc[4]:loc[5]]
-	fields := strings.Fields(classes)
-	for _, existing := range fields {
-		if existing == className {
-			return tag
-		}
-	}
+func buildMissingLinkSpan(href, inner string) string {
 	var b strings.Builder
-	if len(classes) > 0 {
-		b.WriteString(classes)
-		b.WriteByte(' ')
-	}
-	b.WriteString(className)
-	newAttr := "class=" + quote + b.String() + quote
-	return tag[:loc[0]] + newAttr + tag[loc[1]:]
+	b.WriteString(`<span class="new-page-link" role="link" tabindex="0" data-href="`)
+	b.WriteString(html.EscapeString(href))
+	b.WriteString(`">`)
+	b.WriteString(inner)
+	b.WriteString(`</span>`)
+	return b.String()
 }
 
 func injectOrigin(href, origin string) string {
