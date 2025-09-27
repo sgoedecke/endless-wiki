@@ -190,8 +190,18 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 		count = 0
 	}
 
+	var missing map[string]struct{}
+	linked := ExtractLinkedSlugs(page.Content)
+	if len(linked) > 0 {
+		missing, err = s.missingSlugs(ctx, linked)
+		if err != nil {
+			log.Printf("missing slugs lookup for %s: %v", page.Slug, err)
+			missing = nil
+		}
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	decorated := decorateInternalLinks(page.Content, page.Slug)
+	decorated := decorateInternalLinks(page.Content, page.Slug, missing)
 
 	data := struct {
 		Title       string
@@ -295,6 +305,49 @@ func (s *Server) lookupPage(ctx context.Context, slug string) (*Page, error) {
 		return nil, err
 	}
 	return &p, nil
+}
+
+func (s *Server) missingSlugs(ctx context.Context, slugs []string) (map[string]struct{}, error) {
+	if len(slugs) == 0 {
+		return nil, nil
+	}
+
+	placeholders := make([]string, len(slugs))
+	args := make([]any, len(slugs))
+	for i, slug := range slugs {
+		placeholders[i] = "?"
+		args[i] = slug
+	}
+
+	query := "SELECT slug FROM pages WHERE slug IN (" + strings.Join(placeholders, ",") + ")"
+	rows, err := s.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	existing := make(map[string]struct{}, len(slugs))
+	for rows.Next() {
+		var slug string
+		if err := rows.Scan(&slug); err != nil {
+			return nil, err
+		}
+		existing[slug] = struct{}{}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	missing := make(map[string]struct{})
+	for _, slug := range slugs {
+		if _, ok := existing[slug]; !ok {
+			missing[slug] = struct{}{}
+		}
+	}
+	if len(missing) == 0 {
+		return nil, nil
+	}
+	return missing, nil
 }
 
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {

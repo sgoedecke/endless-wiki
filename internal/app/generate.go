@@ -83,6 +83,11 @@ func GeneratePageHTML(ctx context.Context, client *http.Client, cfg Config, slug
 		return "", fmt.Errorf("groq response empty")
 	}
 
+	content = stripHTMLCodeFence(content)
+	if content == "" {
+		return "", fmt.Errorf("groq response empty")
+	}
+
 	return content, nil
 }
 
@@ -150,6 +155,43 @@ func truncate(s string, max int) string {
 		return s
 	}
 	return s[:max]
+}
+
+func stripHTMLCodeFence(content string) string {
+	trimmed := strings.TrimSpace(content)
+	if !strings.HasPrefix(trimmed, "```") {
+		return trimmed
+	}
+
+	normalised := strings.ReplaceAll(trimmed, "\r\n", "\n")
+	lines := strings.Split(normalised, "\n")
+	if len(lines) < 3 {
+		return trimmed
+	}
+
+	first := strings.ToLower(strings.TrimSpace(lines[0]))
+	if !strings.HasPrefix(first, "```") {
+		return trimmed
+	}
+	lang := strings.TrimPrefix(first, "```")
+	lang = strings.TrimSpace(lang)
+	if lang != "" && lang != "html" {
+		return trimmed
+	}
+
+	closing := -1
+	for i := len(lines) - 1; i > 0; i-- {
+		if strings.TrimSpace(lines[i]) == "```" {
+			closing = i
+			break
+		}
+	}
+	if closing == -1 {
+		return trimmed
+	}
+
+	inner := strings.Join(lines[1:closing], "\n")
+	return strings.TrimSpace(inner)
 }
 
 type groqChatRequest struct {

@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"sort"
 	"strings"
 )
 
 var doubleQuoteHref = regexp.MustCompile(`href="(/wiki/[^"]+)"`)
 var singleQuoteHref = regexp.MustCompile(`href='(/wiki/[^']+)'`)
 var wikiHref = regexp.MustCompile(`href=['"](/wiki/[^'"#?]+(?:[^'" ]*)?)['"]`)
+var anchorTag = regexp.MustCompile(`(?i)<a\b([^>]*?)href=(['"])(/wiki/[^'"#?]+(?:[^'" ]*)?)(['"])([^>]*)>`)
 
-func decorateInternalLinks(content, origin string) string {
-	if origin == "" {
-		return content
+func decorateInternalLinks(content, origin string, missing map[string]struct{}) string {
+	if origin != "" {
+		content = addOriginParam(content, origin)
 	}
+	if len(missing) > 0 {
+		content = markMissingLinks(content, missing)
+	}
+	return content
+}
 
+func addOriginParam(content, origin string) string {
 	rewrite := func(match string, re *regexp.Regexp) string {
 		sub := re.FindStringSubmatch(match)
 		if len(sub) != 2 {
@@ -44,6 +52,93 @@ func decorateInternalLinks(content, origin string) string {
 	return content
 }
 
+var classAttr = regexp.MustCompile(`(?i)class=(['"])([^'"]*)(['"])`)
+
+func markMissingLinks(content string, missing map[string]struct{}) string {
+	matches := anchorTag.FindAllStringSubmatchIndex(content, -1)
+	if len(matches) == 0 {
+		return content
+	}
+
+	type replacement struct {
+		start int
+		end   int
+		text  string
+	}
+
+	replacements := make([]replacement, 0, len(matches))
+	for _, loc := range matches {
+		tagStart := loc[0]
+		tagEnd := loc[1]
+		hrefStart := loc[6]
+		hrefEnd := loc[7]
+		hrefValue := content[hrefStart:hrefEnd]
+		slug := slugFromHref(hrefValue)
+		if slug == "" {
+			continue
+		}
+		if _, ok := missing[slug]; !ok {
+			continue
+		}
+
+		tag := content[tagStart:tagEnd]
+		updated := ensureClass(tag, "new-page")
+		if updated == tag {
+			continue
+		}
+
+		replacements = append(replacements, replacement{start: tagStart, end: tagEnd, text: updated})
+	}
+
+	if len(replacements) == 0 {
+		return content
+	}
+
+	sort.Slice(replacements, func(i, j int) bool {
+		return replacements[i].start < replacements[j].start
+	})
+
+	var b strings.Builder
+	last := 0
+	for _, rep := range replacements {
+		if rep.start < last {
+			continue
+		}
+		b.WriteString(content[last:rep.start])
+		b.WriteString(rep.text)
+		last = rep.end
+	}
+	b.WriteString(content[last:])
+	return b.String()
+}
+
+func ensureClass(tag, className string) string {
+	loc := classAttr.FindStringSubmatchIndex(tag)
+	if loc == nil {
+		if len(tag) >= 2 && (tag[1] == 'a' || tag[1] == 'A') {
+			return tag[:2] + " class=\"" + className + "\"" + tag[2:]
+		}
+		return tag
+	}
+
+	quote := tag[loc[2]:loc[3]]
+	classes := tag[loc[4]:loc[5]]
+	fields := strings.Fields(classes)
+	for _, existing := range fields {
+		if existing == className {
+			return tag
+		}
+	}
+	var b strings.Builder
+	if len(classes) > 0 {
+		b.WriteString(classes)
+		b.WriteByte(' ')
+	}
+	b.WriteString(className)
+	newAttr := "class=" + quote + b.String() + quote
+	return tag[:loc[0]] + newAttr + tag[loc[1]:]
+}
+
 func injectOrigin(href, origin string) string {
 	fragment := ""
 	if idx := strings.Index(href, "#"); idx >= 0 {
@@ -61,21 +156,21 @@ func injectOrigin(href, origin string) string {
 }
 
 func hasLinkTo(content, target string) bool {
-    target = strings.ToLower(target)
-    for _, slug := range ExtractLinkedSlugs(content) {
-        if slug == target {
-            return true
-        }
-    }
-    return false
+	target = strings.ToLower(target)
+	for _, slug := range ExtractLinkedSlugs(content) {
+		if slug == target {
+			return true
+		}
+	}
+	return false
 }
 
 // ExtractLinkedSlugs returns normalised wiki slugs referenced within HTML content.
 func ExtractLinkedSlugs(content string) []string {
-    matches := wikiHref.FindAllStringSubmatch(content, -1)
-    if len(matches) == 0 {
-        return nil
-    }
+	matches := wikiHref.FindAllStringSubmatch(content, -1)
+	if len(matches) == 0 {
+		return nil
+	}
 
 	seen := make(map[string]struct{})
 	for _, match := range matches {
@@ -92,11 +187,11 @@ func ExtractLinkedSlugs(content string) []string {
 		}
 	}
 
-    result := make([]string, 0, len(seen))
-    for slug := range seen {
-        result = append(result, slug)
-    }
-    return result
+	result := make([]string, 0, len(seen))
+	for slug := range seen {
+		result = append(result, slug)
+	}
+	return result
 }
 
 func slugFromHref(href string) string {
