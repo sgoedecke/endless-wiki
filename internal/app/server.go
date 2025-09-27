@@ -6,9 +6,12 @@ import (
 	"errors"
 	"html/template"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	mysql "github.com/go-sql-driver/mysql"
@@ -23,7 +26,19 @@ type Server struct {
 	httpClient *http.Client
 	mux        *http.ServeMux
 	genGroup   singleflight.Group
+	limitMu    sync.Mutex
+	limits     map[string]*rateRecord
 }
+
+type rateRecord struct {
+	count      int
+	windowFrom time.Time
+}
+
+const (
+	genLimitPerWindow = 20
+	genLimitWindow    = time.Hour
+)
 
 // ErrDuplicatePage signals that a slug already exists in the database.
 var ErrDuplicatePage = errors.New("duplicate page")
@@ -44,15 +59,16 @@ func NewServer(db *sql.DB, cfg Config) (*Server, error) {
 		httpClient: &http.Client{
 			Timeout: 45 * time.Second,
 		},
-		mux: http.NewServeMux(),
+		mux:    http.NewServeMux(),
+		limits: make(map[string]*rateRecord),
 	}
 
-    srv.mux.HandleFunc("/", srv.handleIndex)
-    srv.mux.HandleFunc("/wiki/", srv.handleWiki)
-    srv.mux.HandleFunc("/random", srv.handleRandomPage)
-    srv.mux.HandleFunc("/recent", srv.handleRecentPage)
-    srv.mux.HandleFunc("/constellation", srv.handleConstellation)
-    srv.mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	srv.mux.HandleFunc("/", srv.handleIndex)
+	srv.mux.HandleFunc("/wiki/", srv.handleWiki)
+	srv.mux.HandleFunc("/random", srv.handleRandomPage)
+	srv.mux.HandleFunc("/recent", srv.handleRecentPage)
+	srv.mux.HandleFunc("/constellation", srv.handleConstellation)
+	srv.mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	srv.mux.HandleFunc("/search", srv.handleSearch)
 
 	return srv, nil
@@ -64,21 +80,21 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
-    if r.URL.Path != "/" {
-        http.NotFound(w, r)
-        return
-    }
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
 
-    http.Redirect(w, r, "/wiki/main_page", http.StatusFound)
+	http.Redirect(w, r, "/wiki/main_page", http.StatusFound)
 }
 
 func (s *Server) handleConstellation(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodGet {
-        w.WriteHeader(http.StatusMethodNotAllowed)
-        return
-    }
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
-    http.ServeFile(w, r, "static/constellation.html")
+	http.ServeFile(w, r, "static/constellation.html")
 }
 
 func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
@@ -143,6 +159,13 @@ func (s *Server) handleWiki(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		ip := clientIP(r)
+		if !s.allowGeneration(ip, time.Now()) {
+			w.Header().Set("Retry-After", strconv.Itoa(int(genLimitWindow.Seconds())))
+			http.Error(w, "generation rate limit exceeded; please wait before requesting new pages", http.StatusTooManyRequests)
+			return
+		}
+
 		result, genErr, _ := s.genGroup.Do(slug, func() (interface{}, error) {
 			return s.generateAndStore(ctx, slug)
 		})
@@ -201,6 +224,50 @@ func (s *Server) handleRandomPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/wiki/"+url.PathEscape(slug), http.StatusFound)
+}
+
+func (s *Server) allowGeneration(ip string, now time.Time) bool {
+	if ip == "" {
+		return true
+	}
+
+	s.limitMu.Lock()
+	defer s.limitMu.Unlock()
+
+	rec, ok := s.limits[ip]
+	if !ok || now.Sub(rec.windowFrom) >= genLimitWindow {
+		rec = &rateRecord{windowFrom: now}
+		s.limits[ip] = rec
+	}
+
+	if rec.count >= genLimitPerWindow {
+		return false
+	}
+
+	rec.count++
+	return true
+}
+
+func clientIP(r *http.Request) string {
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		parts := strings.Split(forwarded, ",")
+		if len(parts) > 0 {
+			ip := strings.TrimSpace(parts[0])
+			if ip != "" {
+				return ip
+			}
+		}
+	}
+
+	if realIP := strings.TrimSpace(r.Header.Get("X-Real-IP")); realIP != "" {
+		return realIP
+	}
+
+	host, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr
+	}
+	return host
 }
 
 func (s *Server) handleRecentPage(w http.ResponseWriter, r *http.Request) {

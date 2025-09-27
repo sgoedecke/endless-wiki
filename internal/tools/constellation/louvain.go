@@ -3,6 +3,7 @@ package constellation
 import (
 	"hash/fnv"
 	"math/rand"
+	"sort"
 )
 
 type neighbor struct {
@@ -33,7 +34,9 @@ type neighborAccumulator struct {
 
 var rng = rand.New(rand.NewSource(42))
 
-var resolutionCandidates = []float64{1.8, 1.4, 1.1, 0.9}
+const targetClusterCount = 20
+
+var resolutionCandidates = []float64{3.4, 2.6, 2.0, 1.6, 1.3, 1.0}
 
 func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 	if len(slugs) == 0 {
@@ -47,30 +50,49 @@ func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 
 	graph := buildGraph(len(slugs), indexBySlug, edges)
 
+	desiredClusters := targetClusterCount
+	if len(slugs) < desiredClusters {
+		desiredClusters = len(slugs) / 3
+		if desiredClusters < 2 {
+			desiredClusters = 2
+		}
+		if desiredClusters > len(slugs) {
+			desiredClusters = len(slugs)
+		}
+	}
+
+	resolutions := resolutionCandidates
+	if len(slugs) < 500 {
+		resolutions = []float64{1.0, 0.8, 0.6}
+	}
+
 	var partition []int
 	unique := 0
-	for i, resolution := range resolutionCandidates {
+	for i, resolution := range resolutions {
 		partition = louvain(graph, resolution)
 		if len(partition) == 0 {
 			break
 		}
 		unique = countUnique(partition)
-		if unique > 1 || i == len(resolutionCandidates)-1 {
+		if unique >= desiredClusters || i == len(resolutions)-1 {
 			break
 		}
 	}
 
-	if len(partition) > 0 && unique <= 1 {
-		resolution := resolutionCandidates[len(resolutionCandidates)-1]
-		for attempts := 0; attempts < 3 && unique <= 1; attempts++ {
-			resolution *= 1.6
+	if len(partition) > 0 && unique < desiredClusters {
+		resolution := resolutions[len(resolutions)-1]
+		for attempts := 0; attempts < 4 && unique < desiredClusters; attempts++ {
+			resolution *= 1.5
 			partition = louvain(graph, resolution)
+			if len(partition) == 0 {
+				break
+			}
 			unique = countUnique(partition)
 		}
 	}
 
-	if len(partition) == 0 || unique <= 1 {
-		return fallbackClusters(indexBySlug)
+	if len(partition) == 0 || unique < desiredClusters {
+		return fallbackClusters(indexBySlug, desiredClusters)
 	}
 
 	result := make(map[string]int, len(slugs))
@@ -399,7 +421,7 @@ func countUnique(values []int) int {
 	return len(seen)
 }
 
-func fallbackClusters(indexBySlug map[string]int) map[string]int {
+func fallbackClusters(indexBySlug map[string]int, desired int) map[string]int {
 	size := len(indexBySlug)
 	result := make(map[string]int, size)
 	if size == 0 {
@@ -407,15 +429,34 @@ func fallbackClusters(indexBySlug map[string]int) map[string]int {
 	}
 
 	clusterCount := size / 5000
+	if clusterCount < desired {
+		clusterCount = desired
+	}
+	if clusterCount > 64 {
+		clusterCount = 64
+	}
+	if clusterCount > size {
+		clusterCount = size
+	}
 	if clusterCount < 2 {
 		clusterCount = 2
 	}
-	if clusterCount > 32 {
-		clusterCount = 32
+
+	slugs := make([]string, 0, size)
+	for slug := range indexBySlug {
+		slugs = append(slugs, slug)
+	}
+	sort.Strings(slugs)
+
+	if clusterCount == size {
+		for idx, slug := range slugs {
+			result[slug] = idx
+		}
+		return result
 	}
 
 	hasher := fnv.New32a()
-	for slug := range indexBySlug {
+	for _, slug := range slugs {
 		hasher.Reset()
 		_, _ = hasher.Write([]byte(slug))
 		bucket := int(hasher.Sum32() % uint32(clusterCount))
