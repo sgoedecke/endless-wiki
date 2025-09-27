@@ -12,7 +12,7 @@ import (
 )
 
 const groqEndpoint = "https://api.groq.com/openai/v1/chat/completions"
-const groqModel = "moonshotai/kimi-k2-instruct-0905"
+const groqModel = "openai/gpt-oss-120b"
 
 // GeneratePageHTML produces article HTML for a slug, calling Groq when possible.
 func GeneratePageHTML(ctx context.Context, client *http.Client, cfg Config, slug string) (string, error) {

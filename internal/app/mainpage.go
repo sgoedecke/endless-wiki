@@ -7,7 +7,7 @@ func mainPageHTML() string {
 <div class="endlesswiki-body">
   <p><strong>EndlessWiki</strong> is a continuously generated encyclopedia. Inspired by <a href="/wiki/wikipedia">Wikipedia</a>, it allows users to collectively explore the knowledge inside a large language model.</p>
 
-  <p>When a user clicks a link in an existing article, EndlessWiki first checks the archive for an existing article. If there isn't one, we call Groq's <code>moonshotai/kimi-k2-instruct-0905</code> model to write the article on the fly. The article is then saved so other users receive the cached version instantly.</p>
+  <p>When a user clicks a link in an existing article, EndlessWiki first checks the archive for an existing article. If there isn't one, we call Groq's <code>openai/gpt-oss-120b</code> model to write the article on the fly. The article is then saved so other users receive the cached version instantly.</p>
 
   <p>New pages can only be discovered by following existing links. Direct navigation to unknown slugs is blocked, so no cheating.</p>
 
