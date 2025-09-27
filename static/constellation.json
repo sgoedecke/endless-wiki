@@ -1,14 +1,14 @@
 {
-  "generated_at": "2025-09-26T22:57:02.921098Z",
+  "generated_at": "2025-09-27T00:41:49.055889Z",
   "totals": {
     "pages": 50797,
     "links": 155682,
-    "clusters": 1
+    "clusters": 5
   },
   "clusters": [
     {
-      "id": 0,
-      "size": 50797,
+      "id": 1,
+      "size": 22084,
       "sample": [
         {
           "slug": "eastern_kingdoms",
@@ -21,34 +21,9 @@
           "created_at": "2025-09-26T18:09:04Z"
         },
         {
-          "slug": "opencitations",
-          "outbound": 23,
-          "created_at": "2025-09-26T13:25:49Z"
-        },
-        {
-          "slug": "srivijaya",
-          "outbound": 23,
-          "created_at": "2025-09-26T17:26:30Z"
-        },
-        {
           "slug": "genus_synthesis_solution",
           "outbound": 21,
           "created_at": "2025-09-26T18:09:19Z"
-        },
-        {
-          "slug": "kingdom_of_scotland",
-          "outbound": 20,
-          "created_at": "2025-09-25T19:19:05Z"
-        },
-        {
-          "slug": "confluence",
-          "outbound": 19,
-          "created_at": "2025-09-26T12:03:32Z"
-        },
-        {
-          "slug": "islamist",
-          "outbound": 19,
-          "created_at": "2025-09-26T17:12:13Z"
         },
         {
           "slug": "azerite",
@@ -56,34 +31,14 @@
           "created_at": "2025-09-26T16:02:48Z"
         },
         {
-          "slug": "samsara",
-          "outbound": 18,
-          "created_at": "2025-09-26T15:25:56Z"
-        },
-        {
-          "slug": "organisms",
-          "outbound": 17,
-          "created_at": "2025-09-26T17:17:16Z"
-        },
-        {
           "slug": "azeroth",
           "outbound": 16,
           "created_at": "2025-09-26T12:46:34Z"
         },
         {
-          "slug": "joshua",
-          "outbound": 16,
-          "created_at": "2025-09-26T16:56:29Z"
-        },
-        {
           "slug": "mal_ganis",
           "outbound": 16,
           "created_at": "2025-09-26T16:13:45Z"
-        },
-        {
-          "slug": "openaccessstandards",
-          "outbound": 16,
-          "created_at": "2025-09-26T12:06:50Z"
         },
         {
           "slug": "video_game_history",
@@ -101,44 +56,9 @@
           "created_at": "2025-09-26T18:13:32Z"
         },
         {
-          "slug": "second_world",
-          "outbound": 15,
-          "created_at": "2025-09-26T19:23:50Z"
-        },
-        {
-          "slug": "university_of_paris",
-          "outbound": 15,
-          "created_at": "2025-09-26T16:32:21Z"
-        },
-        {
-          "slug": "zapatista_online_campaign",
-          "outbound": 15,
-          "created_at": "2025-09-26T16:49:59Z"
-        },
-        {
-          "slug": "citation_graph",
-          "outbound": 14,
-          "created_at": "2025-09-26T16:30:40Z"
-        },
-        {
-          "slug": "course_credit",
-          "outbound": 14,
-          "created_at": "2025-09-26T15:13:58Z"
-        },
-        {
           "slug": "cyc",
           "outbound": 14,
           "created_at": "2025-09-26T16:21:05Z"
-        },
-        {
-          "slug": "greater_london_authority_act_1999",
-          "outbound": 14,
-          "created_at": "2025-09-26T19:41:19Z"
-        },
-        {
-          "slug": "jinan_west_railway_station",
-          "outbound": 14,
-          "created_at": "2025-09-26T17:26:24Z"
         },
         {
           "slug": "kevin_ashton",
@@ -151,39 +71,14 @@
           "created_at": "2025-09-26T16:07:03Z"
         },
         {
-          "slug": "pioneers_of_latin_american_aviation",
-          "outbound": 14,
-          "created_at": "2025-09-26T17:24:46Z"
-        },
-        {
           "slug": "zrtp",
           "outbound": 14,
           "created_at": "2025-09-26T18:59:17Z"
         },
         {
-          "slug": "allegheny_river",
-          "outbound": 13,
-          "created_at": "2025-09-26T17:23:16Z"
-        },
-        {
-          "slug": "article_titles",
-          "outbound": 13,
-          "created_at": "2025-09-26T09:08:28Z"
-        },
-        {
           "slug": "bitmap_index",
           "outbound": 13,
           "created_at": "2025-09-26T18:41:13Z"
-        },
-        {
-          "slug": "candide",
-          "outbound": 13,
-          "created_at": "2025-09-26T16:01:18Z"
-        },
-        {
-          "slug": "general_ledger",
-          "outbound": 13,
-          "created_at": "2025-09-26T12:13:15Z"
         },
         {
           "slug": "intermediate_system_to_intermediate_system",
@@ -209,13 +104,1009 @@
           "slug": "web_hosting_service",
           "outbound": 13,
           "created_at": "2025-09-26T16:21:13Z"
+        },
+        {
+          "slug": "web_page",
+          "outbound": 13,
+          "created_at": "2025-09-26T09:14:56Z"
+        },
+        {
+          "slug": "address_space_layout_randomization",
+          "outbound": 12,
+          "created_at": "2025-09-26T21:04:11Z"
+        },
+        {
+          "slug": "android_jetpack",
+          "outbound": 12,
+          "created_at": "2025-09-26T18:40:55Z"
+        },
+        {
+          "slug": "sword_of_sargeras",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:08:36Z"
+        },
+        {
+          "slug": "third_war",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:06:58Z"
+        },
+        {
+          "slug": "version_7_unix",
+          "outbound": 12,
+          "created_at": "2025-09-26T19:15:47Z"
+        },
+        {
+          "slug": "war_of_the_ancients",
+          "outbound": 12,
+          "created_at": "2025-09-26T19:10:08Z"
+        },
+        {
+          "slug": "web_services",
+          "outbound": 12,
+          "created_at": "2025-09-26T21:07:27Z"
+        },
+        {
+          "slug": "zerg",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:02:36Z"
+        },
+        {
+          "slug": "5g_in_the_united_kingdom",
+          "outbound": 11,
+          "created_at": "2025-09-26T19:08:55Z"
+        },
+        {
+          "slug": "blades_in_the_dark",
+          "outbound": 11,
+          "created_at": "2025-09-26T16:35:36Z"
+        },
+        {
+          "slug": "diablo_ii",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:50:22Z"
+        },
+        {
+          "slug": "dos_attack",
+          "outbound": 11,
+          "created_at": "2025-09-26T18:50:11Z"
+        },
+        {
+          "slug": "gnu_privacy_guard",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:50:36Z"
+        },
+        {
+          "slug": "ionization_cooling",
+          "outbound": 11,
+          "created_at": "2025-09-26T18:19:39Z"
+        },
+        {
+          "slug": "junos_os",
+          "outbound": 11,
+          "created_at": "2025-09-26T21:23:10Z"
+        },
+        {
+          "slug": "resource_sync",
+          "outbound": 11,
+          "created_at": "2025-09-26T21:11:41Z"
+        },
+        {
+          "slug": "router",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:17:01Z"
+        },
+        {
+          "slug": "sha256",
+          "outbound": 11,
+          "created_at": "2025-09-25T09:13:05Z"
+        },
+        {
+          "slug": "usa_patriot_act",
+          "outbound": 11,
+          "created_at": "2025-09-26T16:15:18Z"
+        },
+        {
+          "slug": "agi_completion",
+          "outbound": 10,
+          "created_at": "2025-09-26T18:13:20Z"
         }
       ],
-      "internal_links": 155682,
-      "external_links": 0,
-      "oldest_created_at": "2025-09-24T15:09:58Z",
+      "internal_links": 65381,
+      "external_links": 12305,
+      "oldest_created_at": "2025-09-25T08:29:41Z",
       "newest_created_at": "2025-09-26T22:18:17Z"
+    },
+    {
+      "id": 3,
+      "size": 16333,
+      "sample": [
+        {
+          "slug": "srivijaya",
+          "outbound": 23,
+          "created_at": "2025-09-26T17:26:30Z"
+        },
+        {
+          "slug": "kingdom_of_scotland",
+          "outbound": 20,
+          "created_at": "2025-09-25T19:19:05Z"
+        },
+        {
+          "slug": "confluence",
+          "outbound": 19,
+          "created_at": "2025-09-26T12:03:32Z"
+        },
+        {
+          "slug": "islamist",
+          "outbound": 19,
+          "created_at": "2025-09-26T17:12:13Z"
+        },
+        {
+          "slug": "samsara",
+          "outbound": 18,
+          "created_at": "2025-09-26T15:25:56Z"
+        },
+        {
+          "slug": "joshua",
+          "outbound": 16,
+          "created_at": "2025-09-26T16:56:29Z"
+        },
+        {
+          "slug": "second_world",
+          "outbound": 15,
+          "created_at": "2025-09-26T19:23:50Z"
+        },
+        {
+          "slug": "university_of_paris",
+          "outbound": 15,
+          "created_at": "2025-09-26T16:32:21Z"
+        },
+        {
+          "slug": "zapatista_online_campaign",
+          "outbound": 15,
+          "created_at": "2025-09-26T16:49:59Z"
+        },
+        {
+          "slug": "greater_london_authority_act_1999",
+          "outbound": 14,
+          "created_at": "2025-09-26T19:41:19Z"
+        },
+        {
+          "slug": "jinan_west_railway_station",
+          "outbound": 14,
+          "created_at": "2025-09-26T17:26:24Z"
+        },
+        {
+          "slug": "pioneers_of_latin_american_aviation",
+          "outbound": 14,
+          "created_at": "2025-09-26T17:24:46Z"
+        },
+        {
+          "slug": "allegheny_river",
+          "outbound": 13,
+          "created_at": "2025-09-26T17:23:16Z"
+        },
+        {
+          "slug": "candide",
+          "outbound": 13,
+          "created_at": "2025-09-26T16:01:18Z"
+        },
+        {
+          "slug": "general_ledger",
+          "outbound": 13,
+          "created_at": "2025-09-26T12:13:15Z"
+        },
+        {
+          "slug": "aurelian_exchange",
+          "outbound": 12,
+          "created_at": "2025-09-26T19:04:11Z"
+        },
+        {
+          "slug": "federal_data",
+          "outbound": 12,
+          "created_at": "2025-09-26T15:14:02Z"
+        },
+        {
+          "slug": "ionian_revolt",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:10:13Z"
+        },
+        {
+          "slug": "karimata_strait",
+          "outbound": 12,
+          "created_at": "2025-09-26T17:56:56Z"
+        },
+        {
+          "slug": "new_york_city_sustainability_initiatives",
+          "outbound": 12,
+          "created_at": "2025-09-26T17:03:33Z"
+        },
+        {
+          "slug": "operation_barbarossa",
+          "outbound": 12,
+          "created_at": "2025-09-25T17:53:39Z"
+        },
+        {
+          "slug": "our_common_agenda",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:27:48Z"
+        },
+        {
+          "slug": "podemos",
+          "outbound": 12,
+          "created_at": "2025-09-26T17:21:50Z"
+        },
+        {
+          "slug": "regnans_in_excelsis",
+          "outbound": 12,
+          "created_at": "2025-09-26T15:28:18Z"
+        },
+        {
+          "slug": "temple_festivals",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:58:05Z"
+        },
+        {
+          "slug": "vikings",
+          "outbound": 12,
+          "created_at": "2025-09-26T16:12:21Z"
+        },
+        {
+          "slug": "wikileaks",
+          "outbound": 12,
+          "created_at": "2025-09-26T15:59:46Z"
+        },
+        {
+          "slug": "zhou_dynasty",
+          "outbound": 12,
+          "created_at": "2025-09-26T17:26:30Z"
+        },
+        {
+          "slug": "anglo_saxons",
+          "outbound": 11,
+          "created_at": "2025-09-25T10:05:31Z"
+        },
+        {
+          "slug": "bruce_comyn_feud",
+          "outbound": 11,
+          "created_at": "2025-09-26T16:01:07Z"
+        },
+        {
+          "slug": "doctor_of_the_church",
+          "outbound": 11,
+          "created_at": "2025-09-26T08:32:43Z"
+        },
+        {
+          "slug": "global_partnership_on_aichi_targets",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:19:49Z"
+        },
+        {
+          "slug": "hamoaze",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:35:32Z"
+        },
+        {
+          "slug": "high_court",
+          "outbound": 11,
+          "created_at": "2025-09-26T20:20:06Z"
+        },
+        {
+          "slug": "john_comyn",
+          "outbound": 11,
+          "created_at": "2025-09-26T12:56:03Z"
+        },
+        {
+          "slug": "monastic_reform",
+          "outbound": 11,
+          "created_at": "2025-09-26T17:02:09Z"
+        },
+        {
+          "slug": "phonology",
+          "outbound": 11,
+          "created_at": "2025-09-26T12:19:14Z"
+        },
+        {
+          "slug": "st_bernard_of_clairvaux",
+          "outbound": 11,
+          "created_at": "2025-09-26T13:42:07Z"
+        },
+        {
+          "slug": "30_by_30",
+          "outbound": 10,
+          "created_at": "2025-09-26T15:28:05Z"
+        },
+        {
+          "slug": "aeb",
+          "outbound": 10,
+          "created_at": "2025-09-26T15:17:13Z"
+        }
+      ],
+      "internal_links": 41012,
+      "external_links": 11264,
+      "oldest_created_at": "2025-09-25T08:18:19Z",
+      "newest_created_at": "2025-09-26T22:18:17Z"
+    },
+    {
+      "id": 4,
+      "size": 8016,
+      "sample": [
+        {
+          "slug": "organisms",
+          "outbound": 17,
+          "created_at": "2025-09-26T17:17:16Z"
+        },
+        {
+          "slug": "cardioversion",
+          "outbound": 10,
+          "created_at": "2025-09-26T18:25:16Z"
+        },
+        {
+          "slug": "resting_potential",
+          "outbound": 10,
+          "created_at": "2025-09-26T16:02:23Z"
+        },
+        {
+          "slug": "collagen_iv",
+          "outbound": 9,
+          "created_at": "2025-09-26T17:13:55Z"
+        },
+        {
+          "slug": "ether",
+          "outbound": 9,
+          "created_at": "2025-09-25T10:02:05Z"
+        },
+        {
+          "slug": "feces",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:24:45Z"
+        },
+        {
+          "slug": "stress",
+          "outbound": 9,
+          "created_at": "2025-09-25T11:31:19Z"
+        },
+        {
+          "slug": "timeboxing",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:05:14Z"
+        },
+        {
+          "slug": "1000_genomes_project",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:12:07Z"
+        },
+        {
+          "slug": "electrophile",
+          "outbound": 8,
+          "created_at": "2025-09-26T19:09:17Z"
+        },
+        {
+          "slug": "emerging_pathogens",
+          "outbound": 8,
+          "created_at": "2025-09-26T18:24:14Z"
+        },
+        {
+          "slug": "genetic_genealogy_in_forensics",
+          "outbound": 8,
+          "created_at": "2025-09-26T17:18:40Z"
+        },
+        {
+          "slug": "major_histocompatibility_complex",
+          "outbound": 8,
+          "created_at": "2025-09-26T21:35:26Z"
+        },
+        {
+          "slug": "melanocortin_4_receptor_agonists",
+          "outbound": 8,
+          "created_at": "2025-09-26T16:03:58Z"
+        },
+        {
+          "slug": "neural_microcircuit",
+          "outbound": 8,
+          "created_at": "2025-09-25T12:34:52Z"
+        },
+        {
+          "slug": "occlusion",
+          "outbound": 8,
+          "created_at": "2025-09-26T18:15:53Z"
+        },
+        {
+          "slug": "our_world_in_data_covid_19_database",
+          "outbound": 8,
+          "created_at": "2025-09-26T12:13:13Z"
+        },
+        {
+          "slug": "papez_circuit",
+          "outbound": 8,
+          "created_at": "2025-09-25T12:32:39Z"
+        },
+        {
+          "slug": "pericyte",
+          "outbound": 8,
+          "created_at": "2025-09-25T12:33:09Z"
+        },
+        {
+          "slug": "prokaryote",
+          "outbound": 8,
+          "created_at": "2025-09-25T11:31:56Z"
+        },
+        {
+          "slug": "regulatory_t_cell",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:29:16Z"
+        },
+        {
+          "slug": "streptococcus_pyogenes",
+          "outbound": 8,
+          "created_at": "2025-09-25T12:35:35Z"
+        },
+        {
+          "slug": "stroke_journal",
+          "outbound": 8,
+          "created_at": "2025-09-26T19:07:46Z"
+        },
+        {
+          "slug": "vaccination_coverage",
+          "outbound": 8,
+          "created_at": "2025-09-26T21:21:59Z"
+        },
+        {
+          "slug": "active_surveillance",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:12:12Z"
+        },
+        {
+          "slug": "antiarrhythmic_drugs",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:16:59Z"
+        },
+        {
+          "slug": "bacillus_thuringiensis",
+          "outbound": 7,
+          "created_at": "2025-09-25T11:31:27Z"
+        },
+        {
+          "slug": "bacterial_infections",
+          "outbound": 7,
+          "created_at": "2025-09-25T12:34:18Z"
+        },
+        {
+          "slug": "basal_lamina",
+          "outbound": 7,
+          "created_at": "2025-09-26T09:37:28Z"
+        },
+        {
+          "slug": "biomedicine",
+          "outbound": 7,
+          "created_at": "2025-09-25T12:35:18Z"
+        },
+        {
+          "slug": "biopsy",
+          "outbound": 7,
+          "created_at": "2025-09-25T12:33:09Z"
+        },
+        {
+          "slug": "cell_wall",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:54:59Z"
+        },
+        {
+          "slug": "cholinergic_anti_inflammatory_pathway",
+          "outbound": 7,
+          "created_at": "2025-09-26T05:49:26Z"
+        },
+        {
+          "slug": "clinical_digital_therapeutics",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:10:02Z"
+        },
+        {
+          "slug": "complex_regional_pain_syndrome",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:24:31Z"
+        },
+        {
+          "slug": "coronary_angiography",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:30:55Z"
+        },
+        {
+          "slug": "cotransporter",
+          "outbound": 7,
+          "created_at": "2025-09-26T17:05:11Z"
+        },
+        {
+          "slug": "dicom",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:59:19Z"
+        },
+        {
+          "slug": "ecg",
+          "outbound": 7,
+          "created_at": "2025-09-25T12:34:41Z"
+        },
+        {
+          "slug": "expertise_reversal_effect",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:43:42Z"
+        }
+      ],
+      "internal_links": 22208,
+      "external_links": 5376,
+      "oldest_created_at": "2025-09-25T08:30:38Z",
+      "newest_created_at": "2025-09-26T22:18:15Z"
+    },
+    {
+      "id": 2,
+      "size": 2822,
+      "sample": [
+        {
+          "slug": "opencitations",
+          "outbound": 23,
+          "created_at": "2025-09-26T13:25:49Z"
+        },
+        {
+          "slug": "openaccessstandards",
+          "outbound": 16,
+          "created_at": "2025-09-26T12:06:50Z"
+        },
+        {
+          "slug": "citation_graph",
+          "outbound": 14,
+          "created_at": "2025-09-26T16:30:40Z"
+        },
+        {
+          "slug": "course_credit",
+          "outbound": 14,
+          "created_at": "2025-09-26T15:13:58Z"
+        },
+        {
+          "slug": "article_titles",
+          "outbound": 13,
+          "created_at": "2025-09-26T09:08:28Z"
+        },
+        {
+          "slug": "cc_attribution",
+          "outbound": 11,
+          "created_at": "2025-09-26T12:05:06Z"
+        },
+        {
+          "slug": "charles_stark_draper_prize",
+          "outbound": 10,
+          "created_at": "2025-09-26T16:03:57Z"
+        },
+        {
+          "slug": "citation_metadata",
+          "outbound": 10,
+          "created_at": "2025-09-26T16:30:42Z"
+        },
+        {
+          "slug": "dpubs",
+          "outbound": 10,
+          "created_at": "2025-09-26T19:21:13Z"
+        },
+        {
+          "slug": "initiative_for_opencitations",
+          "outbound": 10,
+          "created_at": "2025-09-26T19:20:50Z"
+        },
+        {
+          "slug": "creole_markup",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:06:19Z"
+        },
+        {
+          "slug": "david_wiley",
+          "outbound": 9,
+          "created_at": "2025-09-26T09:51:07Z"
+        },
+        {
+          "slug": "fedora_repository",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:15:19Z"
+        },
+        {
+          "slug": "german_national_library_of_science_and_technology",
+          "outbound": 9,
+          "created_at": "2025-09-26T15:12:12Z"
+        },
+        {
+          "slug": "information_literacy",
+          "outbound": 9,
+          "created_at": "2025-09-26T12:57:30Z"
+        },
+        {
+          "slug": "iso_25964",
+          "outbound": 9,
+          "created_at": "2025-09-26T22:11:31Z"
+        },
+        {
+          "slug": "linked_data",
+          "outbound": 9,
+          "created_at": "2025-09-26T06:04:16Z"
+        },
+        {
+          "slug": "openstreetmap",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:09:52Z"
+        },
+        {
+          "slug": "refseq",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:41:02Z"
+        },
+        {
+          "slug": "wellcome_trust",
+          "outbound": 9,
+          "created_at": "2025-09-25T08:30:24Z"
+        },
+        {
+          "slug": "zotero_integration",
+          "outbound": 9,
+          "created_at": "2025-09-26T16:29:12Z"
+        },
+        {
+          "slug": "bibliographic_records",
+          "outbound": 8,
+          "created_at": "2025-09-26T16:29:08Z"
+        },
+        {
+          "slug": "citation_cartel",
+          "outbound": 8,
+          "created_at": "2025-09-26T13:35:35Z"
+        },
+        {
+          "slug": "duke_university",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:15:56Z"
+        },
+        {
+          "slug": "open_citation_corpus",
+          "outbound": 8,
+          "created_at": "2025-09-26T16:43:17Z"
+        },
+        {
+          "slug": "reliable_sources_noticeboard",
+          "outbound": 8,
+          "created_at": "2025-09-26T05:59:50Z"
+        },
+        {
+          "slug": "tunis_agenda",
+          "outbound": 8,
+          "created_at": "2025-09-26T16:13:52Z"
+        },
+        {
+          "slug": "apache_jena",
+          "outbound": 7,
+          "created_at": "2025-09-26T19:16:03Z"
+        },
+        {
+          "slug": "australian_business_deans_council",
+          "outbound": 7,
+          "created_at": "2025-09-26T17:23:18Z"
+        },
+        {
+          "slug": "bibliometrics",
+          "outbound": 7,
+          "created_at": "2025-09-26T17:10:38Z"
+        },
+        {
+          "slug": "blazegraph",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:52:08Z"
+        },
+        {
+          "slug": "boston_public_library",
+          "outbound": 7,
+          "created_at": "2025-09-26T17:10:41Z"
+        },
+        {
+          "slug": "bot_policy",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:59:35Z"
+        },
+        {
+          "slug": "checkuser",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:44:31Z"
+        },
+        {
+          "slug": "citizendium_charter",
+          "outbound": 7,
+          "created_at": "2025-09-26T17:18:36Z"
+        },
+        {
+          "slug": "coar_notify",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:21:20Z"
+        },
+        {
+          "slug": "collaborative_knowledge_platforms",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:54:53Z"
+        },
+        {
+          "slug": "confederation_of_open_access_repositories",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:14:01Z"
+        },
+        {
+          "slug": "creative_commons_licensing",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:18:46Z"
+        },
+        {
+          "slug": "datacite_metadata_store",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:50:36Z"
+        }
+      ],
+      "internal_links": 6534,
+      "external_links": 4902,
+      "oldest_created_at": "2025-09-24T15:09:58Z",
+      "newest_created_at": "2025-09-26T22:18:15Z"
+    },
+    {
+      "id": 0,
+      "size": 1542,
+      "sample": [
+        {
+          "slug": "courant_institute_of_mathematical_sciences",
+          "outbound": 12,
+          "created_at": "2025-09-26T08:56:49Z"
+        },
+        {
+          "slug": "zine_libraries",
+          "outbound": 11,
+          "created_at": "2025-09-26T15:53:33Z"
+        },
+        {
+          "slug": "marilyn_monroe",
+          "outbound": 10,
+          "created_at": "2025-09-26T12:42:47Z"
+        },
+        {
+          "slug": "sherry",
+          "outbound": 10,
+          "created_at": "2025-09-26T15:54:51Z"
+        },
+        {
+          "slug": "hacktivism",
+          "outbound": 9,
+          "created_at": "2025-09-26T18:45:17Z"
+        },
+        {
+          "slug": "independent_journalism",
+          "outbound": 9,
+          "created_at": "2025-09-25T17:20:54Z"
+        },
+        {
+          "slug": "bancroft_library",
+          "outbound": 8,
+          "created_at": "2025-09-26T18:52:00Z"
+        },
+        {
+          "slug": "cocktail_family",
+          "outbound": 8,
+          "created_at": "2025-09-26T16:03:58Z"
+        },
+        {
+          "slug": "david_sedaris",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:24:27Z"
+        },
+        {
+          "slug": "macarthur_fellows",
+          "outbound": 8,
+          "created_at": "2025-09-26T12:08:46Z"
+        },
+        {
+          "slug": "san_francisco_bay_area",
+          "outbound": 8,
+          "created_at": "2025-09-26T12:27:33Z"
+        },
+        {
+          "slug": "seinfeld",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:18:28Z"
+        },
+        {
+          "slug": "stanford_startx",
+          "outbound": 8,
+          "created_at": "2025-09-26T15:18:35Z"
+        },
+        {
+          "slug": "cmg_worldwide",
+          "outbound": 7,
+          "created_at": "2025-09-26T19:36:08Z"
+        },
+        {
+          "slug": "cornell_tech",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:12:08Z"
+        },
+        {
+          "slug": "dumbo",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:25:59Z"
+        },
+        {
+          "slug": "fanzines",
+          "outbound": 7,
+          "created_at": "2025-09-25T09:41:45Z"
+        },
+        {
+          "slug": "fluxus",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:07:20Z"
+        },
+        {
+          "slug": "metrotech_center",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:21:29Z"
+        },
+        {
+          "slug": "neo_the_matrix",
+          "outbound": 7,
+          "created_at": "2025-09-26T08:41:29Z"
+        },
+        {
+          "slug": "new_york_harbor",
+          "outbound": 7,
+          "created_at": "2025-09-26T19:11:39Z"
+        },
+        {
+          "slug": "physical_theatre",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:08:47Z"
+        },
+        {
+          "slug": "stanford_venture_studio",
+          "outbound": 7,
+          "created_at": "2025-09-26T12:23:14Z"
+        },
+        {
+          "slug": "vodka_gimlet",
+          "outbound": 7,
+          "created_at": "2025-09-26T16:02:31Z"
+        },
+        {
+          "slug": "walt_disney_productions",
+          "outbound": 7,
+          "created_at": "2025-09-26T18:29:12Z"
+        },
+        {
+          "slug": "william_and_flora_hewlett_foundation",
+          "outbound": 7,
+          "created_at": "2025-09-26T15:32:31Z"
+        },
+        {
+          "slug": "american_renaissance",
+          "outbound": 6,
+          "created_at": "2025-09-26T19:38:35Z"
+        },
+        {
+          "slug": "anarcho_punk",
+          "outbound": 6,
+          "created_at": "2025-09-26T16:05:40Z"
+        },
+        {
+          "slug": "animal_house",
+          "outbound": 6,
+          "created_at": "2025-09-26T15:59:24Z"
+        },
+        {
+          "slug": "anonymous_mask",
+          "outbound": 6,
+          "created_at": "2025-09-26T18:39:12Z"
+        },
+        {
+          "slug": "atlantic_monthly",
+          "outbound": 6,
+          "created_at": "2025-09-26T13:17:04Z"
+        },
+        {
+          "slug": "avatar",
+          "outbound": 6,
+          "created_at": "2025-09-26T15:53:11Z"
+        },
+        {
+          "slug": "battery_park",
+          "outbound": 6,
+          "created_at": "2025-09-26T19:06:05Z"
+        },
+        {
+          "slug": "bohemianism_in_new_york_city",
+          "outbound": 6,
+          "created_at": "2025-09-26T15:38:22Z"
+        },
+        {
+          "slug": "diageo",
+          "outbound": 6,
+          "created_at": "2025-09-26T12:53:15Z"
+        },
+        {
+          "slug": "disney_plus",
+          "outbound": 6,
+          "created_at": "2025-09-26T16:07:12Z"
+        },
+        {
+          "slug": "etienne_decroux",
+          "outbound": 6,
+          "created_at": "2025-09-25T10:12:52Z"
+        },
+        {
+          "slug": "fenway_kenmore_square",
+          "outbound": 6,
+          "created_at": "2025-09-26T17:12:17Z"
+        },
+        {
+          "slug": "film_adaptation",
+          "outbound": 6,
+          "created_at": "2025-09-26T16:41:42Z"
+        },
+        {
+          "slug": "grand_metropolitan",
+          "outbound": 6,
+          "created_at": "2025-09-26T16:12:24Z"
+        }
+      ],
+      "internal_links": 2725,
+      "external_links": 1797,
+      "oldest_created_at": "2025-09-25T08:45:52Z",
+      "newest_created_at": "2025-09-26T22:17:24Z"
     }
   ],
-  "links": []
+  "links": [
+    {
+      "source": 1,
+      "target": 3,
+      "weight": 6825
+    },
+    {
+      "source": 1,
+      "target": 2,
+      "weight": 2454
+    },
+    {
+      "source": 1,
+      "target": 4,
+      "weight": 2308
+    },
+    {
+      "source": 3,
+      "target": 4,
+      "weight": 2151
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "weight": 1470
+    },
+    {
+      "source": 0,
+      "target": 3,
+      "weight": 818
+    },
+    {
+      "source": 2,
+      "target": 4,
+      "weight": 817
+    },
+    {
+      "source": 0,
+      "target": 1,
+      "weight": 718
+    },
+    {
+      "source": 0,
+      "target": 2,
+      "weight": 161
+    },
+    {
+      "source": 0,
+      "target": 4,
+      "weight": 100
+    }
+  ]
 }

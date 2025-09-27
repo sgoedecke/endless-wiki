@@ -1,6 +1,7 @@
 package constellation
 
 import (
+	"hash/fnv"
 	"math/rand"
 )
 
@@ -32,6 +33,8 @@ type neighborAccumulator struct {
 
 var rng = rand.New(rand.NewSource(42))
 
+var resolutionCandidates = []float64{1.8, 1.4, 1.1, 0.9}
+
 func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 	if len(slugs) == 0 {
 		return map[string]int{}
@@ -44,7 +47,31 @@ func computeLouvainClusters(slugs []string, edges []Edge) map[string]int {
 
 	graph := buildGraph(len(slugs), indexBySlug, edges)
 
-	partition := louvain(graph)
+	var partition []int
+	unique := 0
+	for i, resolution := range resolutionCandidates {
+		partition = louvain(graph, resolution)
+		if len(partition) == 0 {
+			break
+		}
+		unique = countUnique(partition)
+		if unique > 1 || i == len(resolutionCandidates)-1 {
+			break
+		}
+	}
+
+	if len(partition) > 0 && unique <= 1 {
+		resolution := resolutionCandidates[len(resolutionCandidates)-1]
+		for attempts := 0; attempts < 3 && unique <= 1; attempts++ {
+			resolution *= 1.6
+			partition = louvain(graph, resolution)
+			unique = countUnique(partition)
+		}
+	}
+
+	if len(partition) == 0 || unique <= 1 {
+		return fallbackClusters(indexBySlug)
+	}
 
 	result := make(map[string]int, len(slugs))
 	for slug, idx := range indexBySlug {
@@ -105,7 +132,7 @@ func buildGraph(nodeCount int, indexBySlug map[string]int, edges []Edge) louvain
 	}
 }
 
-func louvain(graph louvainGraph) []int {
+func louvain(graph louvainGraph, resolution float64) []int {
 	if len(graph.adjacency) == 0 {
 		return []int{}
 	}
@@ -115,7 +142,7 @@ func louvain(graph louvainGraph) []int {
 	acc := newNeighborAccumulator()
 
 	for {
-		moved := oneLevel(graph, status, acc)
+		moved := oneLevel(graph, status, acc, resolution)
 		partition := renumber(status.nodeCommunity)
 		dendrogram = append(dendrogram, partition)
 		if !moved {
@@ -151,7 +178,7 @@ func initStatus(graph louvainGraph) *louvainStatus {
 	}
 }
 
-func oneLevel(graph louvainGraph, status *louvainStatus, acc *neighborAccumulator) bool {
+func oneLevel(graph louvainGraph, status *louvainStatus, acc *neighborAccumulator, resolution float64) bool {
 	n := len(graph.adjacency)
 	if n == 0 {
 		return false
@@ -186,7 +213,7 @@ func oneLevel(graph louvainGraph, status *louvainStatus, acc *neighborAccumulato
 			} else {
 				for _, community := range neighborWeights.keys {
 					weight := neighborWeights.weights[community]
-					increase := weight - (status.communityDegree[community]*nodeDegree)/m2
+					increase := weight - (resolution*status.communityDegree[community]*nodeDegree)/m2
 					if increase > bestIncrease {
 						bestIncrease = increase
 						bestCommunity = community
@@ -359,4 +386,57 @@ func (acc *neighborAccumulator) get(key int) float64 {
 		return v
 	}
 	return 0
+}
+
+func countUnique(values []int) int {
+	if len(values) == 0 {
+		return 0
+	}
+	seen := make(map[int]struct{}, len(values))
+	for _, v := range values {
+		seen[v] = struct{}{}
+	}
+	return len(seen)
+}
+
+func fallbackClusters(indexBySlug map[string]int) map[string]int {
+	size := len(indexBySlug)
+	result := make(map[string]int, size)
+	if size == 0 {
+		return result
+	}
+
+	clusterCount := size / 5000
+	if clusterCount < 2 {
+		clusterCount = 2
+	}
+	if clusterCount > 32 {
+		clusterCount = 32
+	}
+
+	hasher := fnv.New32a()
+	for slug := range indexBySlug {
+		hasher.Reset()
+		_, _ = hasher.Write([]byte(slug))
+		bucket := int(hasher.Sum32() % uint32(clusterCount))
+		result[slug] = bucket
+	}
+
+	// Normalize cluster ids to keep them dense starting from zero.
+	return renumberMap(result)
+}
+
+func renumberMap(clusters map[string]int) map[string]int {
+	mapping := make(map[int]int, len(clusters))
+	next := 0
+	for slug, cluster := range clusters {
+		id, ok := mapping[cluster]
+		if !ok {
+			id = next
+			mapping[cluster] = id
+			next++
+		}
+		clusters[slug] = id
+	}
+	return clusters
 }
