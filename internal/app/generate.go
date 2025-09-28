@@ -25,7 +25,7 @@ func GeneratePageHTML(ctx context.Context, client *http.Client, cfg Config, slug
 		Messages: []groqMessage{
 			{
 				Role:    "system",
-				Content: "You are composing clean HTML for a fictional encyclopedia. Output only valid HTML with a single <h1> title and a <div class=\"endlesswiki-body\"> wrapping the body. Include 3-6 internal links in the body pointing to related topics using <a href=\"/wiki/...\"> text.",
+				Content: "You are composing clean HTML for a fictional encyclopedia. Output only valid HTML with a single <h1> title and a <div class=\"endlesswiki-body\"> wrapping the body. Include 3-6 internal links in the body pointing to related topics using <a href=\"/wiki/...\"> text, favouring proper names, places, or other named entities when choosing link targets.",
 			},
 			{
 				Role:    "user",
