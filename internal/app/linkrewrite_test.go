@@ -28,3 +28,11 @@ func TestDecorateInternalLinksConvertsMissingAnchors(t *testing.T) {
 func contains(haystack, needle string) bool {
 	return strings.Contains(haystack, needle)
 }
+
+func TestExtractLinkedSlugsAmpersand(t *testing.T) {
+	content := `<a href="/wiki/Rock_%26_Roll">Rock &amp; Roll</a>`
+	slugs := ExtractLinkedSlugs(content)
+	if len(slugs) != 1 || slugs[0] != "rock_and_roll" {
+		t.Fatalf("ExtractLinkedSlugs ampersand: got %v", slugs)
+	}
+}

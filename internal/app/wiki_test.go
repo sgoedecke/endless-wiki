@@ -8,6 +8,7 @@ func TestNormalizeSlug(t *testing.T) {
 		"Quantum-Flux":   "quantum_flux",
 		"  spaced out  ": "spaced_out",
 		"Emoji😀Test":     "emojitest",
+		"Rock & Roll":    "rock_and_roll",
 	}
 
 	for input, want := range tests {
