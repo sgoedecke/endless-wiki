@@ -25,6 +25,8 @@ var slugAllowed = regexp.MustCompile(`^[a-z0-9_\-]+$`)
 func NormalizeSlug(input string) (string, error) {
 	trimmed := strings.TrimSpace(input)
 	trimmed = strings.ReplaceAll(trimmed, "&", " and ")
+	trimmed = strings.ReplaceAll(trimmed, "'", "")
+	trimmed = strings.ReplaceAll(trimmed, "’", "")
 	if strings.ContainsAny(trimmed, "/\\?&:#'\"") || strings.Contains(trimmed, "..") {
 		return "", errors.New("slug contains invalid path characters")
 	}

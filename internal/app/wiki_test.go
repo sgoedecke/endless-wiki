@@ -4,11 +4,12 @@ import "testing"
 
 func TestNormalizeSlug(t *testing.T) {
 	tests := map[string]string{
-		"Main Page":      "main_page",
-		"Quantum-Flux":   "quantum_flux",
-		"  spaced out  ": "spaced_out",
-		"Emoji😀Test":     "emojitest",
-		"Rock & Roll":    "rock_and_roll",
+		"Main Page":                "main_page",
+		"Quantum-Flux":             "quantum_flux",
+		"  spaced out  ":           "spaced_out",
+		"Emoji😀Test":               "emojitest",
+		"Rock & Roll":              "rock_and_roll",
+		"People's Liberation Army": "peoples_liberation_army",
 	}
 
 	for input, want := range tests {
