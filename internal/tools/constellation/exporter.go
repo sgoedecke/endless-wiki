@@ -1,11 +1,17 @@
 package constellation
 
 import (
+	"bytes"
+	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"endlesswiki/internal/app"
@@ -22,6 +28,7 @@ type ClusterMember struct {
 type Cluster struct {
 	ID            int             `json:"id"`
 	Size          int             `json:"size"`
+	Label         string          `json:"label,omitempty"`
 	Sample        []ClusterMember `json:"sample"`
 	InternalLinks int             `json:"internal_links"`
 	ExternalLinks int             `json:"external_links"`
@@ -74,7 +81,7 @@ type clusterPair struct {
 
 // Export generates a constellation snapshot written to outPath (if provided)
 // and returns the resulting Graph.
-func Export(db *sql.DB, outPath string) (Graph, error) {
+func Export(db *sql.DB, outPath string, groqAPIKey string) (Graph, error) {
 	rows, err := db.Query(`SELECT slug, content, created_at FROM pages`)
 	if err != nil {
 		return Graph{}, err
@@ -240,6 +247,10 @@ func Export(db *sql.DB, outPath string) (Graph, error) {
 		})
 	}
 
+	if err := labelClusters(context.Background(), clusters, groqAPIKey); err != nil {
+		return Graph{}, err
+	}
+
 	links := make([]ClusterLink, 0, len(linkWeights))
 	for pair, weight := range linkWeights {
 		links = append(links, ClusterLink{Source: pair.a, Target: pair.b, Weight: weight})
@@ -272,6 +283,114 @@ func Export(db *sql.DB, outPath string) (Graph, error) {
 	}
 
 	return g, nil
+}
+
+func labelClusters(ctx context.Context, clusters []Cluster, apiKey string) error {
+	if apiKey == "" {
+		return nil
+	}
+	if len(clusters) == 0 {
+		return nil
+	}
+
+	client := &http.Client{Timeout: 30 * time.Second}
+
+	for i := range clusters {
+		label, err := requestClusterLabel(ctx, client, apiKey, clusters[i])
+		if err != nil {
+			return fmt.Errorf("label cluster %d: %w", clusters[i].ID, err)
+		}
+		clusters[i].Label = label
+	}
+
+	return nil
+}
+
+func requestClusterLabel(ctx context.Context, client *http.Client, apiKey string, cluster Cluster) (string, error) {
+	var builder strings.Builder
+	builder.WriteString("You name knowledge graph clusters. Output a concise 2-4 word title in Title Case, no numbering.\n")
+	builder.WriteString(fmt.Sprintf("Cluster size: %d pages.\n", cluster.Size))
+	builder.WriteString("Representative pages:\n")
+
+	limit := len(cluster.Sample)
+	if limit > 20 {
+		limit = 20
+	}
+	for i := 0; i < limit; i++ {
+		slug := strings.ReplaceAll(cluster.Sample[i].Slug, "_", " ")
+		builder.WriteString("- ")
+		builder.WriteString(slug)
+		builder.WriteString("\n")
+	}
+	builder.WriteString("\nLabel:")
+
+	payload := map[string]any{
+		"model":       "llama-3.1-8b-instant",
+		"max_tokens":  32,
+		"temperature": 0.3,
+		"messages": []map[string]string{
+			{"role": "system", "content": "You are an expert knowledge cartographer."},
+			{"role": "user", "content": builder.String()},
+		},
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://api.groq.com/openai/v1/chat/completions", bytes.NewReader(body))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		data, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
+		return "", fmt.Errorf("groq api status %d: %s", resp.StatusCode, strings.TrimSpace(string(data)))
+	}
+
+	var completion struct {
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&completion); err != nil {
+		return "", err
+	}
+
+	if len(completion.Choices) == 0 {
+		return "", fmt.Errorf("groq api returned no choices")
+	}
+
+	label := strings.TrimSpace(completion.Choices[0].Message.Content)
+	label = strings.Trim(label, "\"'")
+	label = sanitizeLabel(label)
+
+	if label == "" {
+		return "", fmt.Errorf("groq api returned empty label")
+	}
+
+	return label, nil
+}
+
+func sanitizeLabel(label string) string {
+	label = strings.ReplaceAll(label, "\n", " ")
+	label = strings.TrimSpace(label)
+	if len(label) > 60 {
+		label = label[:60]
+	}
+	return label
 }
 
 func write(outPath string, g Graph) error {

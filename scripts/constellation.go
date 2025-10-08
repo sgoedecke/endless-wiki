@@ -25,7 +25,7 @@ func main() {
 	}
 	defer db.Close()
 
-	g, err := constellation.Export(db, *outPath)
+	g, err := constellation.Export(db, *outPath, cfg.GroqAPIKey)
 	if err != nil {
 		log.Fatalf("export constellation: %v", err)
 	}
