@@ -134,6 +134,8 @@
       rawClusters.sort((a, b) => (b.size ?? 0) - (a.size ?? 0));
 
       clusters = rawClusters.map((cluster, index) => {
+        const rawLabel = typeof cluster.label === 'string' ? cluster.label.trim() : '';
+        const label = rawLabel || `Cluster ${index + 1}`;
         const oldest = parseDate(cluster.oldest_created_at);
         const newest = parseDate(cluster.newest_created_at);
         const sample = Array.isArray(cluster.sample) ? cluster.sample : [];
@@ -145,7 +147,7 @@
           externalLinks: cluster.external_links ?? 0,
           oldestCreated: oldest,
           newestCreated: newest,
-          label: `Cluster ${index + 1}`,
+          label,
           displayIndex: index,
           color: clusterColor(index),
           edgeColor: clusterEdgeColor(index),
